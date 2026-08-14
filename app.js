@@ -1346,6 +1346,52 @@
     refreshIcons();
   }
 
+  function getAiLocationContext(message = "") {
+    const text = String(message || "").toLowerCase().replace(/\s+/g, "");
+    const profile = state.data.profile || {};
+    const activeMovement = getMovementLogs().find((log) => log.residentId === profile.id && isMovementActive(log));
+    const explicitOutside = /机构外|在外面|外出|景区|景点|海边|公园|车站|路上|商场|街上|旅途中|公交|出租车/.test(text);
+    const explicitInside = /机构内|房间|护理楼|康养中心|服务台|宿舍/.test(text);
+    if (explicitInside && !explicitOutside) {
+      return { scope: "inside", label: `${profile.institution || "旅居机构"} · ${profile.room || "机构内"}`, institution: profile.institution || "旅居机构" };
+    }
+    if (explicitOutside || activeMovement) {
+      return {
+        scope: "outside",
+        label: activeMovement ? activeMovement.destination : `${profile.stayCity || "当前城市"}机构外当前位置`,
+        institution: profile.institution || "旅居机构",
+        responsible: activeMovement ? activeMovement.responsible : "机构责任人",
+        responsiblePhone: activeMovement ? activeMovement.responsiblePhone : ""
+      };
+    }
+    return { scope: "inside", label: `${profile.institution || "旅居机构"} · ${profile.room || "机构内"}`, institution: profile.institution || "旅居机构" };
+  }
+
+  function applyAiLocation(result, location) {
+    if (!result || !location) return result;
+    const next = { ...result };
+    const highRisk = next.risk_level === "high" || next.urgent === true;
+    if (!highRisk) {
+      if (location.scope === "outside" && next.rule_id === "needs_clarification") {
+        next.place_route = `当前在${location.label}，先停在安全位置，补充准确位置并联系${location.institution}责任人。`;
+      }
+      return next;
+    }
+    const phone = String(next.phone || "").includes("110") ? "110" : "120";
+    const existingActions = Array.isArray(next.immediate_actions) ? next.immediate_actions : [];
+    const locationAction = location.scope === "outside"
+      ? `立即拨打${phone}并打开定位，向接警人员说明${location.label}；同时通知${location.institution}责任人。`
+      : `立即拨打${phone}，让${location.institution}值班人员到场并为急救人员引路。`;
+    next.immediate_actions = [existingActions[0] || "立即停止活动并保持安全姿势", existingActions[1] || "请身边人陪同", locationAction].slice(0, 3);
+    next.place_route = location.scope === "outside"
+      ? `当前在${location.label}，先拨打${phone}并报告具体位置；${location.institution}责任人${location.responsible || "将同步跟进"}。`
+      : `当前在${location.label}，先拨打${phone}；让机构值班人员到场引导急救。`;
+    next.rationale = [...(Array.isArray(next.rationale) ? next.rationale : []), location.scope === "outside" ? "动态台账显示老人当前在机构外，急救或公安应先到现场" : "当前定位为机构内，机构工作人员负责现场协助"].slice(0, 3);
+    next.location_scope = location.scope;
+    next.location_label = location.label;
+    return next;
+  }
+
   async function sendAiMessage(rawMessage) {
     const message = String(rawMessage || "").trim();
     if (!message) return;
@@ -1355,7 +1401,8 @@
     state.aiHistory.push({ role: "user", content: message });
     setAiBusy(true);
 
-    const safetyDecision = localAiFallback(message);
+    const locationContext = getAiLocationContext(message);
+    const safetyDecision = applyAiLocation(localAiFallback(message), locationContext);
     let responseData;
     let provider = "DeepSeek";
     if (safetyDecision.urgent) {
@@ -1381,14 +1428,18 @@
               institution: state.data.profile.institution,
               age: state.data.profile.age,
               conditions: state.data.profile.conditions,
-              allergy: state.data.profile.allergy
+              allergy: state.data.profile.allergy,
+              location_scope: locationContext.scope,
+              location_label: locationContext.label,
+              responsible: locationContext.responsible || "",
+              responsible_phone: locationContext.responsiblePhone || ""
             }
           })
         });
         window.clearTimeout(timeout);
         if (!response.ok) throw new Error("api_unavailable");
         const payload = await response.json();
-        responseData = payload.result;
+        responseData = applyAiLocation(payload.result, locationContext);
         provider = `${payload.provider} · ${payload.model}`;
         if (riskRank(safetyDecision.risk_level) > riskRank(responseData.risk_level) && safetyDecision.rule_id !== "needs_clarification") {
           responseData = safetyDecision;

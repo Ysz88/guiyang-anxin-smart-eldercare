@@ -191,7 +191,7 @@ def urgent_guardrail(message: str) -> dict[str, Any] | None:
             "urgent": True,
         }
 
-    if re.search(r"骨折|大量出血|出血不止|流血不止|严重摔伤|头部受伤|撞到头|开放性伤口", text):
+    if re.search(r"骨折|腿断|胳膊断|手臂断|脚断|骨头断|无法负重|不能负重|大量出血|出血不止|流血不止|严重摔伤|摔倒后(?:站不起来|剧烈疼|疼得厉害)|跌倒后(?:动不了|剧烈疼)|头部受伤|撞到头|开放性伤口", text):
         return {
             "summary": "疑似骨折或持续出血，请停止移动伤处并立即拨打120。",
             "immediate_actions": [
@@ -232,6 +232,40 @@ def urgent_guardrail(message: str) -> dict[str, Any] | None:
     return None
 
 
+def apply_location_context(result: dict[str, Any], context: dict[str, Any] | None) -> dict[str, Any]:
+    """Make emergency routing reflect the resident's current movement ledger."""
+    if not isinstance(result, dict) or not isinstance(context, dict):
+        return result
+    scope = str(context.get("location_scope", "inside")).lower()
+    outside = scope == "outside"
+    label = str(context.get("location_label", "机构内"))[:120]
+    institution = str(context.get("institution", "旅居机构"))[:100]
+    responsible = str(context.get("responsible", "机构责任人"))[:80]
+    if result.get("risk_level") != "high" and not result.get("urgent"):
+        if outside and result.get("rule_id") == "needs_clarification":
+            result["place_route"] = f"当前在{label}，先停在安全位置，补充准确位置并联系{institution}责任人。"
+        return result
+    phone = "110" if "110" in str(result.get("phone", "")) else "120"
+    actions = result.get("immediate_actions") if isinstance(result.get("immediate_actions"), list) else []
+    location_action = (
+        f"立即拨打{phone}并打开定位，向接警人员说明{label}；同时通知{institution}责任人。"
+        if outside
+        else f"立即拨打{phone}，让{institution}值班人员到场并为急救人员引路。"
+    )
+    result["immediate_actions"] = [str(item)[:80] for item in (actions[:2] + [location_action])]
+    result["place_route"] = (
+        f"当前在{label}，先拨打{phone}并报告具体位置；{institution}责任人{responsible}同步跟进。"
+        if outside
+        else f"当前在{label}，先拨打{phone}；让机构值班人员到场引导急救。"
+    )
+    rationale = result.get("rationale") if isinstance(result.get("rationale"), list) else []
+    rationale.append("动态台账显示老人当前在机构外，急救或公安应先到现场" if outside else "当前定位为机构内，机构工作人员负责现场协助")
+    result["rationale"] = [str(item)[:100] for item in rationale[:3]]
+    result["location_scope"] = scope
+    result["location_label"] = label
+    return result
+
+
 def deepseek_chat(payload: dict[str, Any], config: dict[str, str]) -> dict[str, Any]:
     message = str(payload.get("message", "")).strip()
     if not message:
@@ -253,7 +287,7 @@ def deepseek_chat(payload: dict[str, Any], config: dict[str, str]) -> dict[str, 
     system_prompt = """
 你是广西旅居养老场景中的适老AI服务助手。你只提供风险筛查、办事指引和信息整理，不作医学诊断，不替代医生、警察或主管部门。
 回答必须简短、明确、可行动，适合老年人阅读。不要夸大确定性，不要编造机构地址、价格或电话号码。
-遇到胸痛、呼吸困难、意识异常等健康紧急情况，电话优先120；人身安全、走失或治安危险优先110；消费维权可建议12315；其他政务诉求可建议12345。
+遇到胸痛、呼吸困难、意识异常等健康紧急情况，电话优先120；人身安全、走失或治安危险优先110；消费维权可建议12315；其他政务诉求可建议12345。若老人当前在机构外，急症必须先写拨打急救或报警电话并报告具体位置，同时通知机构责任人，不得只写“联系机构工作人员”。
 请只输出一个JSON对象，不要输出Markdown，字段必须为：
 summary（不超过60字）、immediate_actions（最多3条）、place_route（地点或路线）、price（费用说明）、phone（一个最优联系电话）、risk_level（low/medium/high）、escalate（布尔值）、rationale（最多3条触发依据）。
 """.strip()
@@ -264,6 +298,9 @@ summary（不超过60字）、immediate_actions（最多3条）、place_route（
         "age": str(profile.get("age", ""))[:10],
         "conditions": profile.get("conditions", []) if isinstance(profile.get("conditions"), list) else [],
         "allergy": str(profile.get("allergy", ""))[:80],
+        "location_scope": str(profile.get("location_scope", "inside"))[:20],
+        "location_label": str(profile.get("location_label", "机构内"))[:120],
+        "responsible": str(profile.get("responsible", ""))[:80],
     }
     messages = [{"role": "system", "content": system_prompt}]
     messages.extend(safe_history)
@@ -299,7 +336,7 @@ summary（不超过60字）、immediate_actions（最多3条）、place_route（
     with urllib.request.urlopen(request, timeout=45) as response:
         remote = json.loads(response.read().decode("utf-8"))
     content = remote["choices"][0]["message"]["content"]
-    return normalize_result(content)
+    return apply_location_context(normalize_result(content), profile)
 
 
 class AppHandler(SimpleHTTPRequestHandler):
@@ -400,6 +437,8 @@ class AppHandler(SimpleHTTPRequestHandler):
 
         message = str(payload.get("message", "")).strip()
         guardrail = urgent_guardrail(message) if message else None
+        if guardrail:
+            guardrail = apply_location_context(guardrail, payload.get("context"))
         if guardrail:
             self.send_json(
                 HTTPStatus.OK,

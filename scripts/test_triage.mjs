@@ -13,6 +13,7 @@ const cases = [
   ["我胸口疼得厉害，喘不上气", "medical_cardiorespiratory", "high", "120"],
   ["我头很晕，浑身动不了，有点看不清东西", "medical_neurological", "high", "120"],
   ["我已经骨折，擦破皮出血了", "medical_trauma", "high", "120"],
+  ["我感觉腿断了", "medical_trauma", "high", "120"],
   ["康复训练多收了300元", "consumer_dispute", "medium", "12315"],
   ["我找不到回机构的路了", "location_lost", "high", "110"],
   ["我有点咳嗽，没发烧", "medical_attention", "medium", "120（症状加重时）"],

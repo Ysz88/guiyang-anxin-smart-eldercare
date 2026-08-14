@@ -40,7 +40,7 @@
       });
     }
 
-    const majorInjury = /骨折|大量出血|出血不止|流血不止|严重摔伤|头部受伤|撞到头|开放性伤口/.test(text);
+    const majorInjury = /骨折|腿断|胳膊断|手臂断|脚断|骨头断|无法负重|不能负重|大量出血|出血不止|流血不止|严重摔伤|摔倒后(?:站不起来|剧烈疼|疼得厉害)|跌倒后(?:动不了|剧烈疼)|头部受伤|撞到头|开放性伤口/.test(text);
     if (majorInjury) {
       return decision("medical_trauma", "外伤急症", {
         summary: "疑似骨折或持续出血，请停止移动伤处并立即拨打120。",
