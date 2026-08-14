@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Local static server and DeepSeek proxy for the Guangxi eldercare demo."""
+"""Local full-service server: static site, SQLite persistence, and DeepSeek proxy."""
 
 from __future__ import annotations
 
@@ -7,6 +7,7 @@ import argparse
 import json
 import os
 import re
+import sqlite3
 import threading
 import time
 import urllib.error
@@ -16,12 +17,16 @@ from http import HTTPStatus
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Any
+from urllib.parse import parse_qs, urlparse
+
+from database import BusinessDatabase
 
 
 ROOT = Path(__file__).resolve().parent
-MAX_BODY_BYTES = 512 * 1024
+MAX_BODY_BYTES = 2 * 1024 * 1024
 DEFAULT_BASE_URL = "https://api.deepseek.com"
 DEFAULT_MODEL = "deepseek-chat"
+DATABASE = BusinessDatabase()
 
 
 def parse_env_file(path: Path) -> dict[str, str]:
@@ -200,7 +205,7 @@ summary（不超过60字）、immediate_actions（最多3条）、place_route（
 
 
 class AppHandler(SimpleHTTPRequestHandler):
-    server_version = "GuangxiEldercare/1.1"
+    server_version = "GuangxiEldercare/1.2"
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, directory=str(ROOT), **kwargs)
@@ -215,8 +220,24 @@ class AppHandler(SimpleHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
+    def read_json_body(self) -> dict[str, Any]:
+        try:
+            content_length = int(self.headers.get("Content-Length", "0"))
+        except ValueError as error:
+            raise ValueError("invalid_request_size") from error
+        if content_length <= 0 or content_length > MAX_BODY_BYTES:
+            raise ValueError("invalid_request_size")
+        try:
+            payload = json.loads(self.rfile.read(content_length).decode("utf-8"))
+        except (UnicodeError, json.JSONDecodeError) as error:
+            raise ValueError("invalid_json") from error
+        if not isinstance(payload, dict):
+            raise ValueError("invalid_json")
+        return payload
+
     def do_GET(self) -> None:  # noqa: N802
-        if self.path == "/api/status":
+        parsed = urlparse(self.path)
+        if parsed.path == "/api/status":
             config = load_config()
             self.send_json(
                 HTTPStatus.OK,
@@ -226,28 +247,56 @@ class AppHandler(SimpleHTTPRequestHandler):
                     "model": config["model"],
                     "source": config["source"],
                     "video_upload": False,
+                    "database": DATABASE.status(),
                 },
+            )
+            return
+        if parsed.path == "/api/database/status":
+            self.send_json(HTTPStatus.OK, {"ok": True, "database": DATABASE.status()})
+            return
+        if parsed.path == "/api/state":
+            self.send_json(
+                HTTPStatus.OK,
+                {"ok": True, "data": DATABASE.read_state(), "database": DATABASE.status()},
+            )
+            return
+        if parsed.path == "/api/audit":
+            query = parse_qs(parsed.query)
+            try:
+                limit = int(query.get("limit", ["20"])[0])
+            except ValueError:
+                limit = 20
+            self.send_json(
+                HTTPStatus.OK,
+                {"ok": True, "logs": DATABASE.audit_logs(limit), "database": DATABASE.status()},
             )
             return
         super().do_GET()
 
     def do_POST(self) -> None:  # noqa: N802
-        if self.path != "/api/chat":
+        parsed = urlparse(self.path)
+        if parsed.path not in {"/api/chat", "/api/state"}:
             self.send_json(HTTPStatus.NOT_FOUND, {"error": "not_found"})
             return
 
         try:
-            content_length = int(self.headers.get("Content-Length", "0"))
-        except ValueError:
-            content_length = 0
-        if content_length <= 0 or content_length > MAX_BODY_BYTES:
-            self.send_json(HTTPStatus.BAD_REQUEST, {"error": "invalid_request_size"})
+            payload = self.read_json_body()
+        except ValueError as error:
+            self.send_json(HTTPStatus.BAD_REQUEST, {"error": str(error)})
             return
 
-        try:
-            payload = json.loads(self.rfile.read(content_length).decode("utf-8"))
-        except (UnicodeError, json.JSONDecodeError):
-            self.send_json(HTTPStatus.BAD_REQUEST, {"error": "invalid_json"})
+        if parsed.path == "/api/state":
+            state = payload.get("state")
+            audit = payload.get("audit") if isinstance(payload.get("audit"), dict) else {}
+            if not isinstance(state, dict):
+                self.send_json(HTTPStatus.BAD_REQUEST, {"error": "invalid_state"})
+                return
+            try:
+                DATABASE.replace_state(state, audit)
+            except (ValueError, sqlite3.DatabaseError):
+                self.send_json(HTTPStatus.BAD_REQUEST, {"error": "database_write_failed"})
+                return
+            self.send_json(HTTPStatus.OK, {"ok": True, "database": DATABASE.status()})
             return
 
         config = load_config()
@@ -286,15 +335,23 @@ class AppHandler(SimpleHTTPRequestHandler):
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Run the Guiyang Anxin local demo server.")
+    parser = argparse.ArgumentParser(description="Run the Guiyang Anxin local full-service server.")
     parser.add_argument("--port", type=int, default=4173)
     parser.add_argument("--open", action="store_true", help="Open the site in the default browser.")
     args = parser.parse_args()
 
+    DATABASE.initialize()
+    database_status = DATABASE.status()
     config = load_config()
     status = f"DeepSeek ready ({config['model']}, {config['source']})" if config["api_key"] else "DeepSeek not configured"
     url = f"http://127.0.0.1:{args.port}/"
-    print(f"Guiyang Anxin running at {url}")
+    print(f"Guiyang Anxin full service running at {url}")
+    print(
+        "SQLite ready "
+        f"({database_status['counts']['residents']['count']} residents, "
+        f"{database_status['counts']['movement_records']['count']} movements, "
+        f"{database_status['counts']['audit_logs']['count']} audit logs)"
+    )
     print(status)
     print("Press Ctrl+C to stop.")
 

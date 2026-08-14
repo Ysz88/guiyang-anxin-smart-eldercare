@@ -3,6 +3,8 @@
 
   const STORAGE_KEY = "guiyang-v1-data";
   const SESSION_KEY = "guiyang-v1-session";
+  const LOCAL_BACKEND_ENABLED = ["127.0.0.1", "localhost"].includes(window.location.hostname) && window.location.protocol.startsWith("http");
+  let backendSaveQueue = Promise.resolve();
 
   const roleMeta = {
     elder: {
@@ -84,7 +86,13 @@
     speechRecognition: null,
     aiHistory: [],
     lastAiResult: null,
-    aiProvider: ""
+    aiProvider: "",
+    backend: {
+      enabled: LOCAL_BACKEND_ENABLED,
+      connected: false,
+      lastSync: "尚未连接",
+      summary: null
+    }
   };
 
   const loginView = document.getElementById("login-view");
@@ -118,8 +126,68 @@
     }
   }
 
-  function saveData() {
+  function saveData(action = "更新业务数据", entityType = "state", entityId = "") {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state.data));
+    if (!state.backend.enabled) return Promise.resolve(false);
+    const account = state.role && state.data.accounts[state.role] ? state.data.accounts[state.role] : null;
+    const requestBody = {
+      state: state.data,
+      audit: {
+        actor_role: state.role || "system",
+        actor_name: account ? account.name : "系统",
+        action,
+        entity_type: entityType,
+        entity_id: entityId,
+        detail: { role: state.role || "system" }
+      }
+    };
+    backendSaveQueue = backendSaveQueue.catch(() => false).then(async () => {
+      const response = await fetch("/api/state", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(requestBody)
+      });
+      if (!response.ok) throw new Error("database_write_failed");
+      const payload = await response.json();
+      state.backend.connected = true;
+      state.backend.lastSync = "刚刚";
+      state.backend.summary = payload.database || state.backend.summary;
+      return true;
+    }).catch((error) => {
+      state.backend.connected = false;
+      state.backend.lastSync = "数据库暂时离线";
+      console.warn("SQLite同步失败，已保留浏览器副本。", error);
+      return false;
+    });
+    return backendSaveQueue;
+  }
+
+  async function syncFromBackend() {
+    if (!state.backend.enabled) return false;
+    try {
+      await backendSaveQueue.catch(() => false);
+      const response = await fetch("/api/state", { cache: "no-store" });
+      if (!response.ok) throw new Error("database_read_failed");
+      const payload = await response.json();
+      if (!payload.data || typeof payload.data !== "object") throw new Error("invalid_database_state");
+      state.data = payload.data;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state.data));
+      state.backend.connected = true;
+      state.backend.lastSync = "刚刚";
+      state.backend.summary = payload.database || null;
+      return true;
+    } catch (error) {
+      state.backend.connected = false;
+      state.backend.lastSync = "使用浏览器后备数据";
+      return false;
+    }
+  }
+
+  async function refreshCurrentData() {
+    const loaded = await syncFromBackend();
+    if (!loaded) state.data = loadData();
+    renderShell();
+    showToast(loaded ? "数据库已刷新" : "已载入后备数据", loaded ? "当前业务台账已从SQLite重新载入。" : "数据库暂不可用，当前使用浏览器副本。", loaded ? "success" : "warning");
   }
 
   function escapeHtml(value) {
@@ -213,7 +281,7 @@
     const account = state.data.accounts[role];
     loginAccount.value = account.account;
     loginPassword.value = "123456";
-    demoAccountText.textContent = `演示账号：${account.account} / 123456`;
+    demoAccountText.textContent = `测试账号：${account.account} / 123456`;
     loginError.hidden = true;
     refreshIcons();
   }
@@ -638,7 +706,7 @@
     state.data.profile.lastCheck = "刚刚";
     state.data.profile.risk = overall;
     state.data.dailyChecks.unshift({ date: "2026-08-13", sleep: values.daily.includes("睡眠") ? values.daily : "已纳入快筛", appetite: values.daily.includes("食欲") ? values.daily : "已纳入快筛", mood: values.emotion, mobility: values.activity, status: missing.length ? "待补项" : "已完成" });
-    saveData();
+    saveData("提交老人身心快筛", "resident_screening", state.data.profile.id);
     closeModal();
     showToast(missing.length ? "快筛已保存，等待补齐缺项" : "五维快筛已完成", `${riskLabel(overall)} · 置信度 ${Math.round(confidence * 100)}%${overall !== "low" ? "，已进入人工复核队列" : ""}`, overall === "high" ? "danger" : overall === "medium" ? "warning" : "success");
     renderPage();
@@ -805,7 +873,7 @@
     return `
       <div class="page-toolbar">
         <div><h2>自治区旅居养老监管总览</h2><p>数据范围：接入机构 68 家 · 更新时间：今日 08:30</p></div>
-        <div class="toolbar-actions"><button class="btn btn-secondary" type="button" data-action="export-report">${icon("download")}导出简报</button><button class="btn btn-primary" type="button" data-page="events">${icon("siren")}查看事件中心</button></div>
+        <div class="toolbar-actions">${state.backend.connected ? `<span class="status-tag success">SQLite已连接</span><button class="btn btn-secondary" type="button" data-action="view-audit">${icon("history")}操作审计</button>` : ""}<button class="btn btn-secondary" type="button" data-action="export-report">${icon("download")}导出简报</button><button class="btn btn-primary" type="button" data-page="events">${icon("siren")}查看事件中心</button></div>
       </div>
       <div class="stat-grid">
         ${statCard("当前在桂老人", "1,284", "人", "users-round", "较昨日 +38 人", "positive")}
@@ -1026,7 +1094,7 @@
     };
     state.data.dailyChecks = [entry, ...state.data.dailyChecks.filter((item) => item.date !== entry.date)];
     state.data.profile.lastCheck = "刚刚";
-    saveData();
+    saveData("提交老人状态打卡", "daily_check", entry.date);
     showToast("今日状态已提交", "如出现连续异常，服务机构会收到关怀提醒。");
     renderPage();
   }
@@ -1390,7 +1458,7 @@
       timeline: [{ time: "刚刚", text: "老人完成AI视频对话", state: "done" }, { time: "刚刚", text: "AI生成行动卡并提交人工复核", state: "current" }]
     };
     state.data.events.unshift(eventItem);
-    saveData();
+    saveData("AI对话生成求助事件", "risk_event", eventItem.id);
     const button = modalRoot.querySelector('[data-action="create-event-from-ai"]');
     if (button) {
       button.disabled = true;
@@ -1489,7 +1557,7 @@
       timeline: [{ time: "刚刚", text: "老人提交语音/文字事件", state: "done" }, { time: "刚刚", text: "系统生成结构化事件卡", state: "current" }]
     };
     state.data.events.unshift(eventItem);
-    saveData();
+    saveData("提交老人求助事件", "risk_event", eventItem.id);
     closeModal();
     showActionCard(eventItem);
     renderPage();
@@ -1554,7 +1622,7 @@
     event.deadline = event.status === "已办结" ? "已按时完成" : "剩余 1小时"
     event.timeline = event.timeline || [];
     event.timeline.push({ time: "刚刚", text: String(form.get("note")), state: event.status === "已办结" ? "done" : "current" });
-    saveData();
+    saveData("更新事件处置结果", "risk_event", event.id);
     closeModal();
     showToast(event.status === "已办结" ? "事件已办结" : "处置结果已更新", `${event.id} 已从${previous}更新为${event.status}`);
     renderPage();
@@ -1596,7 +1664,7 @@
     resident.screening.reviewNote = note ? note.value.trim() : "已完成人工复核。";
     resident.screening.reviewedAt = "刚刚";
     resident.risk = resident.screening.overall;
-    saveData();
+    saveData("确认身心快筛结果", "resident_screening", resident.id);
     closeModal();
     showToast("快筛结果已确认", `${resident.name}的证据链和人工备注已写入动态台账。`);
     renderPage();
@@ -1651,7 +1719,7 @@
     state.data.movementLogs.unshift(log);
     resident.fresh = "刚刚";
     state.data.notifications.unshift({ id: Date.now(), title: "新动向待监管确认", detail: `${resident.name}前往${log.destination}，责任人${log.responsible}`, time: "刚刚", level: "warning", read: false });
-    saveData();
+    saveData("新增旅居外出报备", "movement", log.id);
     closeModal();
     showToast("外出报备已提交", `${resident.name}的去向和责任链已同步监管端。`);
     renderPage();
@@ -1695,7 +1763,7 @@
     log.confirmationNote = String(form.get("note"));
     log.timeline = log.timeline || [];
     log.timeline.push({ time: "刚刚", text: `${log.regulatorStatus}：${log.confirmationNote}`, state: log.regulatorStatus === "已确认" ? "done" : "current" });
-    saveData();
+    saveData("监管确认旅居动向", "movement", log.id);
     closeModal();
     renderNav();
     renderPage();
@@ -1735,7 +1803,7 @@
         linkedEvent.timeline.push({ time: "刚刚", text: "机构确认老人已安全返回，等待监管复核", state: "current" });
       }
     }
-    saveData();
+    saveData("确认老人安全返回", "movement", log.id);
     closeModal();
     renderPage();
     showToast("返回状态已核验", `${log.resident}已回到机构，相关预警同步更新。`);
@@ -1755,9 +1823,10 @@
     formEvent.preventDefault();
     const form = new FormData(formEvent.target);
     const resident = state.data.residents.find((item) => item.id === form.get("residentId"));
-    state.data.serviceLogs.unshift({ id: `SV-0810-${String(state.data.serviceLogs.length + 32).padStart(3, "0")}`, residentId: resident.id, resident: resident.name, type: String(form.get("type")), staff: String(form.get("staff")), time: String(form.get("time")), result: String(form.get("result")), status: "已记录" });
+    const serviceRecord = { id: `SV-0810-${String(state.data.serviceLogs.length + 32).padStart(3, "0")}`, residentId: resident.id, resident: resident.name, type: String(form.get("type")), staff: String(form.get("staff")), time: String(form.get("time")), result: String(form.get("result")), status: "已记录" };
+    state.data.serviceLogs.unshift(serviceRecord);
     resident.fresh = "刚刚";
-    saveData();
+    saveData("新增机构服务记录", "service", serviceRecord.id);
     closeModal();
     showToast("服务记录已保存", `${resident.name}的动态台账已更新。`);
     renderPage();
@@ -1779,7 +1848,7 @@
     const name = String(form.get("name"));
     const id = `GX-LJ-2026-${String(319 + state.data.residents.length).padStart(6, "0")}`;
     state.data.residents.unshift({ id, name, age: Number(form.get("age")), source: String(form.get("source")), room: String(form.get("room")), checkIn: "今日", risk: "low", fresh: "刚刚", status: "在住" });
-    saveData();
+    saveData("办理旅居入住", "resident", id);
     closeModal();
     showToast("入住档案已生成", `${name}已进入机构动态台账。`);
     renderPage();
@@ -1792,7 +1861,7 @@
       subtitle: "更新后会保留修改人和时间",
       body: `<form id="profile-form" class="form-grid"><label><span>本人电话</span><input class="form-control" name="phone" value="${escapeHtml(p.phone)}"></label><label><span>紧急联系人</span><input class="form-control" name="emergencyName" value="${escapeHtml(p.emergencyName)}"></label><label class="full"><span>紧急联系人电话</span><input class="form-control" name="emergencyPhone" value="${escapeHtml(p.emergencyPhone)}"></label><div class="full notice">${icon("lock-keyhole")}保存后仅更新联系方式字段，不会改变健康风险判断。</div></form>`,
       footer: `<button class="btn btn-secondary" type="button" data-action="close-modal">取消</button><button class="btn btn-primary" type="submit" form="profile-form">${icon("save")}保存资料</button>`,
-      onOpen: () => document.getElementById("profile-form").addEventListener("submit", (formEvent) => { formEvent.preventDefault(); const form = new FormData(formEvent.target); p.phone = String(form.get("phone")); p.emergencyName = String(form.get("emergencyName")); p.emergencyPhone = String(form.get("emergencyPhone")); p.lastCheck = "刚刚"; saveData(); closeModal(); showToast("资料已更新", "紧急联络信息已写入档案。"); renderPage(); })
+      onOpen: () => document.getElementById("profile-form").addEventListener("submit", (formEvent) => { formEvent.preventDefault(); const form = new FormData(formEvent.target); p.phone = String(form.get("phone")); p.emergencyName = String(form.get("emergencyName")); p.emergencyPhone = String(form.get("emergencyPhone")); p.lastCheck = "刚刚"; saveData("更新老人联系资料", "resident", p.id); closeModal(); showToast("资料已更新", "紧急联络信息已写入档案。"); renderPage(); })
     });
   }
 
@@ -1819,12 +1888,40 @@
 
   function openProfileMenu() {
     const account = state.data.accounts[state.role];
+    const dataEnvironment = state.backend.connected ? "SQLite业务数据库" : state.backend.enabled ? "浏览器后备数据" : "在线独立数据版";
+    const databaseNotice = state.backend.connected
+      ? `${icon("database")}业务数据已写入SQLite规范化表，并保留角色、时间、动作和对象审计记录。`
+      : `${icon("database")}当前使用浏览器独立数据；通过“启动作品.bat”运行本地完整服务后会自动连接SQLite。`;
     openModal({
       title: account.name,
       subtitle: account.org,
-      body: `<div class="profile-grid"><div class="data-field"><span>当前角色</span><strong>${roleMeta[state.role].label}</strong></div><div class="data-field"><span>数据环境</span><strong>本地演示数据</strong></div><div class="data-field"><span>最近登录</span><strong>今日 08:30</strong></div><div class="data-field"><span>权限范围</span><strong>${state.role === "elder" ? "本人档案与求助记录" : state.role === "provider" ? "本机构老人、服务及动向记录" : "全区监测、动向确认与事件督办"}</strong></div></div><div class="notice" style="margin-top:17px">${icon("database")}当前数据保存在浏览器本地，便于现场演示。退出后数据不会丢失。</div>`,
-      footer: `<button class="btn btn-secondary" type="button" data-action="reset-demo">${icon("rotate-ccw")}恢复初始数据</button><button class="btn btn-primary" type="button" data-action="close-modal">关闭</button>`
+      body: `<div class="profile-grid"><div class="data-field"><span>当前角色</span><strong>${roleMeta[state.role].label}</strong></div><div class="data-field"><span>数据环境</span><strong>${dataEnvironment}</strong></div><div class="data-field"><span>最近同步</span><strong>${escapeHtml(state.backend.lastSync)}</strong></div><div class="data-field"><span>权限范围</span><strong>${state.role === "elder" ? "本人档案与求助记录" : state.role === "provider" ? "本机构老人、服务及动向记录" : "全区监测、动向确认与事件督办"}</strong></div></div><div class="notice" style="margin-top:17px">${databaseNotice}</div>`,
+      footer: `${state.role === "regulator" && state.backend.connected ? `<button class="btn btn-secondary" type="button" data-action="view-audit">${icon("history")}查看操作审计</button>` : ""}<button class="btn btn-secondary" type="button" data-action="reset-demo">${icon("rotate-ccw")}恢复初始数据</button><button class="btn btn-primary" type="button" data-action="close-modal">关闭</button>`
     });
+  }
+
+  async function openAuditLog() {
+    if (!state.backend.connected) {
+      showToast("数据库未连接", "请通过启动作品.bat运行本地完整服务。", "warning");
+      return;
+    }
+    try {
+      const response = await fetch("/api/audit?limit=30", { cache: "no-store" });
+      if (!response.ok) throw new Error("audit_unavailable");
+      const payload = await response.json();
+      const logs = Array.isArray(payload.logs) ? payload.logs : [];
+      const counts = payload.database && payload.database.counts ? payload.database.counts : {};
+      const auditCount = counts.audit_logs ? counts.audit_logs.count : logs.length;
+      openModal({
+        title: "数据库操作审计",
+        subtitle: `SQLite · 共${auditCount}条留痕 · 最近${logs.length}条`,
+        wide: true,
+        body: `<div class="profile-grid"><div class="data-field"><span>老人档案</span><strong>${counts.residents ? counts.residents.count : 0}条</strong></div><div class="data-field"><span>旅居动向</span><strong>${counts.movement_records ? counts.movement_records.count : 0}条</strong></div><div class="data-field"><span>服务记录</span><strong>${counts.service_records ? counts.service_records.count : 0}条</strong></div><div class="data-field"><span>风险事件</span><strong>${counts.risk_events ? counts.risk_events.count : 0}条</strong></div></div><section class="panel" style="margin-top:17px"><div class="panel-header"><div><h3>最近操作记录</h3><p>记录谁在何时对哪个业务对象执行了什么动作</p></div><span class="status-tag success">不可由业务页面修改</span></div><div class="table-wrap"><table class="data-table"><thead><tr><th>时间</th><th>操作者</th><th>业务动作</th><th>对象类型</th><th>对象编号</th></tr></thead><tbody>${logs.length ? logs.map((log) => `<tr><td>${escapeHtml(new Date(log.occurred_at).toLocaleString("zh-CN", { hour12: false }))}</td><td><div class="cell-copy"><strong>${escapeHtml(log.actor_name)}</strong><small>${escapeHtml(roleMeta[log.actor_role] ? roleMeta[log.actor_role].label : log.actor_role)}</small></div></td><td><strong>${escapeHtml(log.action)}</strong></td><td>${escapeHtml(log.entity_type)}</td><td>${escapeHtml(log.entity_id || "--")}</td></tr>`).join("") : `<tr><td colspan="5"><div class="empty-state">${icon("history")}<strong>暂无操作记录</strong></div></td></tr>`}</tbody></table></div></section><div class="notice" style="margin-top:17px">${icon("shield-check")}审计日志用于责任追溯；正式部署时将增加日志保留期限、分级查询权限和异地备份。</div>`,
+        footer: `<button class="btn btn-primary" type="button" data-action="close-modal">关闭</button>`
+      });
+    } catch (error) {
+      showToast("审计记录读取失败", "SQLite服务暂时不可用，请稍后重试。", "danger");
+    }
   }
 
   function exportReport() {
@@ -1857,11 +1954,12 @@
     loginPassword.type = isPassword ? "text" : "password";
     document.getElementById("toggle-password").setAttribute("aria-label", isPassword ? "隐藏密码" : "显示密码");
   });
-  loginForm.addEventListener("submit", (event) => {
+  loginForm.addEventListener("submit", async (event) => {
     event.preventDefault();
+    await syncFromBackend();
     const account = state.data.accounts[state.selectedRole];
     if (loginAccount.value.trim() !== account.account || loginPassword.value !== account.password) {
-      loginError.textContent = "账号或密码不正确，请使用页面下方的演示账号。";
+      loginError.textContent = "账号或密码不正确，请使用页面下方的测试账号。";
       loginError.hidden = false;
       return;
     }
@@ -1903,18 +2001,19 @@
     if (action === "record-service") openRecordService(actionButton.dataset.resident || "");
     if (action === "register-resident") openRegisterResident();
     if (action === "edit-profile") openEditProfile();
-    if (action === "refresh-data") { state.data = loadData(); renderPage(); showToast("数据已刷新", "当前台账已重新载入。"); }
+    if (action === "refresh-data") refreshCurrentData();
+    if (action === "view-audit") openAuditLog();
     if (action === "export-report") exportReport();
     if (action === "export-movements") exportMovements();
-    if (action === "read-notifications") { state.data.notifications.forEach((item) => { item.read = true; }); saveData(); closeModal(); document.getElementById("notification-count").textContent = "0"; showToast("通知已全部标记为已读"); }
-    if (action === "reset-demo") { state.data = cloneSeed(); saveData(); closeModal(); renderShell(); showToast("演示数据已恢复", "所有角色将重新看到初始数据。", "warning"); }
+    if (action === "read-notifications") { state.data.notifications.forEach((item) => { item.read = true; }); saveData("标记通知为已读", "notification", "all"); closeModal(); document.getElementById("notification-count").textContent = "0"; showToast("通知已全部标记为已读"); }
+    if (action === "reset-demo") { state.data = cloneSeed(); saveData("恢复脱敏初始数据", "database", "seed"); closeModal(); renderShell(); showToast("初始数据已恢复", "所有角色将重新看到脱敏初始数据。", "warning"); }
   });
 
   document.addEventListener("change", (event) => {
     const consent = event.target.closest("[data-consent]");
     if (!consent) return;
     state.data.profile.consents[consent.dataset.consent] = consent.checked;
-    saveData();
+    saveData("更新数据授权", "consent", consent.dataset.consent);
     showToast(consent.checked ? "授权已开启" : "授权已撤回", "后续数据使用范围会按授权状态更新。");
   });
 
@@ -1932,14 +2031,19 @@
   });
   document.addEventListener("keydown", (event) => { if (event.key === "Escape" && modalRoot.innerHTML) closeModal(); });
 
-  const session = sessionStorage.getItem(SESSION_KEY);
-  if (session && roleMeta[session]) {
-    state.role = session;
-    loginView.hidden = true;
-    appView.hidden = false;
-    renderShell();
-  } else {
-    setSelectedRole("elder");
-    refreshIcons();
+  async function initializeApp() {
+    await syncFromBackend();
+    const session = sessionStorage.getItem(SESSION_KEY);
+    if (session && roleMeta[session]) {
+      state.role = session;
+      loginView.hidden = true;
+      appView.hidden = false;
+      renderShell();
+    } else {
+      setSelectedRole("elder");
+      refreshIcons();
+    }
   }
+
+  initializeApp();
 })();

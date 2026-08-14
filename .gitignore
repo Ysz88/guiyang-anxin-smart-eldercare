@@ -5,6 +5,11 @@
 deepseek*.txt
 deepseek*.json
 
+# Local SQLite runtime data
+runtime/*.db
+runtime/*.db-shm
+runtime/*.db-wal
+
 # Runtime and editor files
 __pycache__/
 *.pyc
