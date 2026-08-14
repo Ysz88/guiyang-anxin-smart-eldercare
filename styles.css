@@ -1695,7 +1695,9 @@ textarea.form-control {
 }
 
 .bar-fill {
+  display: block;
   height: 100%;
+  min-width: 4px;
   background: var(--blue);
   border-radius: 5px;
 }
