@@ -1,0 +1,14 @@
+# Local secrets and machine-specific configuration
+.env
+.env.*
+*.env.local
+deepseek*.txt
+deepseek*.json
+
+# Runtime and editor files
+__pycache__/
+*.pyc
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini

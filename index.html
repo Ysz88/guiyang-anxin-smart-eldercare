@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="广西旅居老人智能建档、动态台账、风险预警与应急联动演示站点">
+  <title>桂养安心·旅居智管</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main-content">跳到主要内容</a>
+
+  <section id="login-view" class="login-view" aria-labelledby="login-title">
+    <div class="login-grid">
+      <main class="login-main">
+        <div class="brand brand-login" aria-label="桂养安心旅居智管">
+          <span class="brand-mark"><i data-lucide="shield-check" aria-hidden="true"></i></span>
+          <span>
+            <strong>桂养安心</strong>
+            <small>旅居养老智慧监管平台</small>
+          </span>
+        </div>
+
+        <div class="login-heading">
+          <span class="eyebrow">广西旅居养老服务</span>
+          <h1 id="login-title">账号登录</h1>
+          <p>请选择身份进入对应工作台</p>
+        </div>
+
+        <div class="role-switch" role="tablist" aria-label="登录身份">
+          <button class="role-option active" type="button" data-role="elder" role="tab" aria-selected="true">
+            <i data-lucide="heart-handshake" aria-hidden="true"></i>
+            <span>老人端</span>
+          </button>
+          <button class="role-option" type="button" data-role="provider" role="tab" aria-selected="false">
+            <i data-lucide="building-2" aria-hidden="true"></i>
+            <span>机构端</span>
+          </button>
+          <button class="role-option" type="button" data-role="regulator" role="tab" aria-selected="false">
+            <i data-lucide="landmark" aria-hidden="true"></i>
+            <span>监管端</span>
+          </button>
+        </div>
+
+        <form id="login-form" class="login-form" novalidate>
+          <label class="field">
+            <span>账号</span>
+            <span class="input-wrap">
+              <i data-lucide="user-round" aria-hidden="true"></i>
+              <input id="login-account" name="account" autocomplete="username" value="elder" required>
+            </span>
+          </label>
+          <label class="field">
+            <span>密码</span>
+            <span class="input-wrap">
+              <i data-lucide="lock-keyhole" aria-hidden="true"></i>
+              <input id="login-password" name="password" type="password" autocomplete="current-password" value="123456" required>
+              <button id="toggle-password" class="icon-btn inline-icon" type="button" aria-label="显示密码" title="显示密码">
+                <i data-lucide="eye" aria-hidden="true"></i>
+              </button>
+            </span>
+          </label>
+          <div id="login-error" class="form-error" role="alert" hidden></div>
+          <button class="btn btn-primary btn-login" type="submit">
+            <span>登录工作台</span>
+            <i data-lucide="arrow-right" aria-hidden="true"></i>
+          </button>
+        </form>
+
+        <div class="demo-account" aria-label="演示账号">
+          <i data-lucide="key-round" aria-hidden="true"></i>
+          <span id="demo-account-text">演示账号：elder / 123456</span>
+        </div>
+        <p class="login-meta"><i data-lucide="shield" aria-hidden="true"></i> 演示数据已脱敏，健康筛查结果不用于医学诊断</p>
+      </main>
+
+      <aside class="login-status" aria-label="平台实时态势">
+        <div class="status-topline">
+          <span><span class="live-dot" aria-hidden="true"></span>平台运行正常</span>
+          <span>08:30 更新</span>
+        </div>
+        <div class="status-copy">
+          <p class="eyebrow">今日全区态势</p>
+          <h2>旅居老人服务与风险状态</h2>
+        </div>
+        <div class="login-metrics">
+          <div><strong>1,284</strong><span>当前在桂</span></div>
+          <div><strong>68</strong><span>接入机构</span></div>
+          <div><strong>17</strong><span>处置中预警</span></div>
+          <div><strong>93.6%</strong><span>事件闭环率</span></div>
+        </div>
+        <div class="status-map" aria-label="广西重点旅居区域状态示意">
+          <div class="map-grid" aria-hidden="true"></div>
+          <span class="map-node node-guilin"><b>桂林</b><small>318人</small></span>
+          <span class="map-node node-nanning"><b>南宁</b><small>402人</small></span>
+          <span class="map-node node-beihai"><b>北海</b><small>276人</small></span>
+          <span class="map-node node-bama"><b>巴马</b><small>145人</small></span>
+          <div class="map-legend"><span><i class="legend-dot normal"></i>运行正常</span><span><i class="legend-dot warning"></i>存在待处理预警</span></div>
+        </div>
+        <p class="status-foot">自治区级数据看板 · 本地演示环境</p>
+      </aside>
+    </div>
+  </section>
+
+  <div id="app-view" class="app-shell" hidden>
+    <aside id="sidebar" class="sidebar">
+      <div class="brand brand-app">
+        <span class="brand-mark"><i data-lucide="shield-check" aria-hidden="true"></i></span>
+        <span><strong>桂养安心</strong><small>旅居智管</small></span>
+      </div>
+      <div id="role-badge" class="role-badge"></div>
+      <nav id="side-nav" class="side-nav" aria-label="主导航"></nav>
+      <div class="sidebar-foot">
+        <button id="logout-btn" class="nav-utility" type="button">
+          <i data-lucide="log-out" aria-hidden="true"></i><span>退出登录</span>
+        </button>
+      </div>
+    </aside>
+
+    <div id="sidebar-scrim" class="sidebar-scrim" hidden></div>
+
+    <section class="workspace">
+      <header class="topbar">
+        <button id="menu-toggle" class="icon-btn menu-toggle" type="button" aria-label="打开导航" title="打开导航">
+          <i data-lucide="menu" aria-hidden="true"></i>
+        </button>
+        <div class="page-context">
+          <span id="page-eyebrow" class="eyebrow"></span>
+          <h1 id="page-title">工作台</h1>
+        </div>
+        <div class="topbar-actions">
+          <label id="global-search-wrap" class="global-search">
+            <i data-lucide="search" aria-hidden="true"></i>
+            <input id="global-search" type="search" placeholder="搜索老人、机构或事件" aria-label="全局搜索">
+          </label>
+          <button id="notification-btn" class="icon-btn notification-btn" type="button" aria-label="查看通知" title="查看通知">
+            <i data-lucide="bell" aria-hidden="true"></i>
+            <span id="notification-count" class="notification-count">3</span>
+          </button>
+          <button id="profile-btn" class="user-menu" type="button" aria-label="当前用户">
+            <span id="user-avatar" class="avatar">李</span>
+            <span class="user-copy"><strong id="user-name">李桂芳</strong><small id="user-org">旅居老人</small></span>
+            <i data-lucide="chevron-down" aria-hidden="true"></i>
+          </button>
+        </div>
+      </header>
+
+      <main id="main-content" class="content" tabindex="-1"></main>
+      <nav id="mobile-nav" class="mobile-nav" aria-label="移动端导航"></nav>
+    </section>
+  </div>
+
+  <div id="modal-root"></div>
+  <div id="toast-root" class="toast-root" aria-live="polite" aria-atomic="true"></div>
+
+  <script src="assets/lucide.min.js?v=2"></script>
+  <script src="data.js?v=2"></script>
+  <script src="app.js?v=2"></script>
+</body>
+</html>
