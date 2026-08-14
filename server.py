@@ -73,10 +73,22 @@ def load_config() -> dict[str, str]:
     def resolve(name: str, default: str = "") -> str:
         return os.environ.get(name, "").strip() or file_values.get(name, "").strip() or default
 
+    base_url = resolve("DEEPSEEK_BASE_URL", DEFAULT_BASE_URL)
+    requested_model = resolve("DEEPSEEK_MODEL", DEFAULT_MODEL)
+    host = (urlparse(base_url).hostname or "").lower()
+    official_models = {"deepseek-chat", "deepseek-reasoner"}
+    model = requested_model
+    model_adjusted = False
+    if host == "api.deepseek.com" and requested_model not in official_models:
+        model = DEFAULT_MODEL
+        model_adjusted = True
+
     return {
         "api_key": resolve("DEEPSEEK_API_KEY"),
-        "base_url": resolve("DEEPSEEK_BASE_URL", DEFAULT_BASE_URL),
-        "model": resolve("DEEPSEEK_MODEL", DEFAULT_MODEL),
+        "base_url": base_url,
+        "model": model,
+        "requested_model": requested_model,
+        "model_adjusted": model_adjusted,
         "source": source or "system environment",
     }
 
@@ -132,6 +144,92 @@ def normalize_result(content: str) -> dict[str, Any]:
         "escalate": bool(result.get("escalate", risk_level == "high")),
         "rationale": [str(item)[:100] for item in rationale[:3]],
     }
+
+
+def urgent_guardrail(message: str) -> dict[str, Any] | None:
+    """Return a deterministic emergency decision before any model call."""
+    text = re.sub(r"\s+", "", message.lower())
+
+    if re.search(r"胸痛|胸口(?:疼|痛|发闷|闷)|心口(?:疼|痛)|胸闷|喘不上气|喘不过气|呼吸(?:困难|不畅|急促)|气短得厉害|窒息|嘴唇发紫", text):
+        return {
+            "summary": "胸口疼或喘不上气属于急症信号，请立即拨打120。",
+            "immediate_actions": [
+                "立即停止活动，坐下或半卧，不要独自走动",
+                "让身边人通知机构并保持门口通畅",
+                "马上拨打120，说明胸痛和呼吸困难",
+            ],
+            "place_route": "留在当前位置等待120；不要自行驾车去医院。",
+            "price": "120接警免费；救护车和就医费用按当地标准结算。",
+            "phone": "120",
+            "risk_level": "high",
+            "escalate": True,
+            "rationale": ["描述出现胸口疼、胸闷或胸痛", "描述出现喘不上气或呼吸困难"],
+            "rule_id": "medical_cardiorespiratory",
+            "rule_label": "胸痛与呼吸急症",
+            "urgent": True,
+        }
+
+    neurological_signal = re.search(r"昏迷|意识不清|叫不醒|抽搐|口角歪|嘴歪|说话含糊|一侧(?:无力|麻木)|浑身动不了|全身动不了", text)
+    dizziness = re.search(r"头(?:很|特别|非常|突然)?晕|头昏|眩晕", text)
+    functional_loss = re.search(r"站不稳|站不起来|走不了|不能走|动不了|看不清|视物模糊|眼前发黑", text)
+    if neurological_signal or (dizziness and functional_loss):
+        return {
+            "summary": "头晕且无法站立或视物不清属于高危信号，请立即拨打120。",
+            "immediate_actions": [
+                "立即坐下或侧卧，不要再站立和走动",
+                "记住症状开始时间，让身边人陪同",
+                "马上拨打120，说明头晕、活动和视力变化",
+            ],
+            "place_route": "留在当前位置等待120；不要自行乘车或独自外出。",
+            "price": "120接警免费；救护车和就医费用按当地标准结算。",
+            "phone": "120",
+            "risk_level": "high",
+            "escalate": True,
+            "rationale": ["描述出现明显头晕或意识异常", "同时出现无法站立、活动或视物不清"],
+            "rule_id": "medical_neurological",
+            "rule_label": "神经系统急症",
+            "urgent": True,
+        }
+
+    if re.search(r"骨折|大量出血|出血不止|流血不止|严重摔伤|头部受伤|撞到头|开放性伤口", text):
+        return {
+            "summary": "疑似骨折或持续出血，请停止移动伤处并立即拨打120。",
+            "immediate_actions": [
+                "不要自行复位或继续走动，保持伤处稳定",
+                "用干净纱布轻压出血处，不触碰外露骨端",
+                "立即拨打120，并通知机构责任人",
+            ],
+            "place_route": "留在安全位置等待急救人员；不要自行搬动伤者。",
+            "price": "120接警免费；救护车和就医费用按当地标准结算。",
+            "phone": "120",
+            "risk_level": "high",
+            "escalate": True,
+            "rationale": ["描述出现骨折、严重外伤或持续出血", "不当移动可能加重损伤"],
+            "rule_id": "medical_trauma",
+            "rule_label": "外伤急症",
+            "urgent": True,
+        }
+
+    if re.search(r"不想活|活不下去|想死|自杀|轻生|伤害自己", text):
+        return {
+            "summary": "您现在的安全最重要，请立即联系身边人并拨打110。",
+            "immediate_actions": [
+                "不要独处，马上叫工作人员或家属来到身边",
+                "远离药物、刀具、阳台等危险位置",
+                "立即拨打110；已经受伤同时拨打120",
+            ],
+            "place_route": "留在有人陪同的安全区域，不要独自离开。",
+            "price": "报警和紧急求助免费。",
+            "phone": "110",
+            "risk_level": "high",
+            "escalate": True,
+            "rationale": ["描述出现自伤或轻生表达", "需要立即由真人介入保护"],
+            "rule_id": "personal_self_harm",
+            "rule_label": "人身安全急症",
+            "urgent": True,
+        }
+
+    return None
 
 
 def deepseek_chat(payload: dict[str, Any], config: dict[str, str]) -> dict[str, Any]:
@@ -195,7 +293,7 @@ summary（不超过60字）、immediate_actions（最多3条）、place_route（
             "Authorization": f"Bearer {config['api_key']}",
             "Content-Type": "application/json",
             "Accept": "application/json",
-            "User-Agent": "GuangxiEldercareDemo/1.1",
+            "User-Agent": "GuangxiEldercareService/1.3",
         },
     )
     with urllib.request.urlopen(request, timeout=45) as response:
@@ -205,7 +303,7 @@ summary（不超过60字）、immediate_actions（最多3条）、place_route（
 
 
 class AppHandler(SimpleHTTPRequestHandler):
-    server_version = "GuangxiEldercare/1.2"
+    server_version = "GuangxiEldercare/1.3"
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, directory=str(ROOT), **kwargs)
@@ -245,6 +343,7 @@ class AppHandler(SimpleHTTPRequestHandler):
                     "configured": bool(config["api_key"]),
                     "provider": "DeepSeek",
                     "model": config["model"],
+                    "model_adjusted": config["model_adjusted"],
                     "source": config["source"],
                     "video_upload": False,
                     "database": DATABASE.status(),
@@ -297,6 +396,20 @@ class AppHandler(SimpleHTTPRequestHandler):
                 self.send_json(HTTPStatus.BAD_REQUEST, {"error": "database_write_failed"})
                 return
             self.send_json(HTTPStatus.OK, {"ok": True, "database": DATABASE.status()})
+            return
+
+        message = str(payload.get("message", "")).strip()
+        guardrail = urgent_guardrail(message) if message else None
+        if guardrail:
+            self.send_json(
+                HTTPStatus.OK,
+                {
+                    "provider": "急症安全分流",
+                    "model": "deterministic-guardrail-v1",
+                    "result": guardrail,
+                    "created_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+                },
+            )
             return
 
         config = load_config()

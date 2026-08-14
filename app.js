@@ -1226,7 +1226,7 @@
       const data = await response.json();
       if (data.configured) {
         status.className = "api-pill connected";
-        status.innerHTML = `<span></span>DeepSeek已连接 · ${escapeHtml(data.model)}`;
+        status.innerHTML = `<span></span>DeepSeek配置已读取 · ${escapeHtml(data.model)}${data.model_adjusted ? "（已纠正模型名）" : ""}`;
       } else {
         status.className = "api-pill fallback";
         status.innerHTML = "<span></span>未找到API配置 · 使用本地规则";
@@ -1234,8 +1234,8 @@
     } catch (error) {
       status.className = "api-pill fallback";
       status.innerHTML = location.hostname.endsWith("github.io")
-        ? "<span></span>在线演示 · 使用本地安全规则"
-        : "<span></span>请从“启动作品.bat”打开 · 当前使用本地规则";
+        ? "<span></span>在线安全分流已启用"
+        : "<span></span>请从“启动作品.bat”打开 · 安全分流已启用";
     }
   }
 
@@ -1355,36 +1355,49 @@
     state.aiHistory.push({ role: "user", content: message });
     setAiBusy(true);
 
+    const safetyDecision = localAiFallback(message);
     let responseData;
     let provider = "DeepSeek";
-    try {
-      const controller = new AbortController();
-      const timeout = window.setTimeout(() => controller.abort(), 46000);
-      const response = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        cache: "no-store",
-        signal: controller.signal,
-        body: JSON.stringify({
-          message,
-          history: state.aiHistory.slice(0, -1),
-          context: {
-            current_city: state.data.profile.stayCity,
-            institution: state.data.profile.institution,
-            age: state.data.profile.age,
-            conditions: state.data.profile.conditions,
-            allergy: state.data.profile.allergy
-          }
-        })
-      });
-      window.clearTimeout(timeout);
-      if (!response.ok) throw new Error("api_unavailable");
-      const payload = await response.json();
-      responseData = payload.result;
-      provider = `${payload.provider} · ${payload.model}`;
-    } catch (error) {
-      responseData = localAiFallback(message);
-      provider = "本地应急规则";
+    if (safetyDecision.urgent) {
+      responseData = safetyDecision;
+      provider = `急症安全分流 · ${safetyDecision.rule_label}`;
+    } else if (!LOCAL_BACKEND_ENABLED) {
+      responseData = safetyDecision;
+      provider = `在线安全分流 · ${safetyDecision.rule_label}`;
+    } else {
+      try {
+        const controller = new AbortController();
+        const timeout = window.setTimeout(() => controller.abort(), 46000);
+        const response = await fetch("/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          cache: "no-store",
+          signal: controller.signal,
+          body: JSON.stringify({
+            message,
+            history: state.aiHistory.slice(0, -1),
+            context: {
+              current_city: state.data.profile.stayCity,
+              institution: state.data.profile.institution,
+              age: state.data.profile.age,
+              conditions: state.data.profile.conditions,
+              allergy: state.data.profile.allergy
+            }
+          })
+        });
+        window.clearTimeout(timeout);
+        if (!response.ok) throw new Error("api_unavailable");
+        const payload = await response.json();
+        responseData = payload.result;
+        provider = `${payload.provider} · ${payload.model}`;
+        if (riskRank(safetyDecision.risk_level) > riskRank(responseData.risk_level) && safetyDecision.rule_id !== "needs_clarification") {
+          responseData = safetyDecision;
+          provider = `安全规则优先 · ${safetyDecision.rule_label}`;
+        }
+      } catch (error) {
+        responseData = safetyDecision;
+        provider = `本地安全分流 · ${safetyDecision.rule_label}`;
+      }
     }
 
     state.lastAiResult = responseData;
@@ -1398,17 +1411,12 @@
   }
 
   function localAiFallback(message) {
-    const text = message.toLowerCase();
-    if (/胸痛|呼吸困难|昏迷|意识不清|剧烈头痛|严重摔伤/.test(text)) {
-      return { summary: "可能存在健康紧急风险，请立即联系120。", immediate_actions: ["坐下或平躺，避免独自走动", "请身边人员陪同", "立即拨打120"], place_route: "留在当前位置，保持通道畅通，等待急救人员。", price: "急救及就医费用以医疗机构实际结算为准。", phone: "120", risk_level: "high", escalate: true, rationale: ["描述中出现紧急健康症状", "需要专业医疗人员现场判断"] };
-    }
-    if (/迷路|找不到路|走失|被跟踪|人身危险|抢劫|打人/.test(text)) {
-      return { summary: "请先保证人身安全，并尽快联系110。", immediate_actions: ["留在明亮且有人值守的位置", "发送当前位置给家属或机构", "拨打110说明情况"], place_route: "优先前往附近警务站、游客服务中心或有人值守的公共场所。", price: "报警求助免费。", phone: "110", risk_level: "high", escalate: true, rationale: ["描述涉及走失或人身安全", "需要属地公安协助"] };
-    }
-    if (/收费|价格|退款|多收|票据|消费/.test(text)) {
-      return { summary: "先保存票据和付款记录，再要求核对公示价格。", immediate_actions: ["拍照保存价目表和票据", "向机构提出核对与退款诉求", "未解决时拨打12315"], place_route: "先到机构服务台；仍未解决可联系属地市场监管部门。", price: "维权咨询免费，实际费用以公示与合同为准。", phone: "12315", risk_level: "medium", escalate: true, rationale: ["描述涉及收费争议", "需要保留证据并核验公示价格"] };
-    }
-    return { summary: "情况已记录，建议先联系机构工作人员协助处理。", immediate_actions: ["说明发生时间、地点和诉求", "保留相关照片或记录", "需要主管部门协助时拨打12345"], place_route: "前往所在机构服务台，或留在当前位置等待工作人员联系。", price: "咨询免费，服务费用以机构公示为准。", phone: "12345", risk_level: "low", escalate: false, rationale: ["暂未识别到需要立即报警或急救的描述"] };
+    if (window.GY_TRIAGE && typeof window.GY_TRIAGE.assess === "function") return window.GY_TRIAGE.assess(message);
+    return { rule_id: "safe_fallback", rule_label: "人工复核", summary: "系统暂时无法判断，请留在安全位置并联系机构工作人员。", immediate_actions: ["不要独自外出", "请工作人员立即到场查看", "出现胸痛或呼吸困难时拨打120"], place_route: "留在当前位置等待工作人员。", price: "以机构和医疗机构公示为准。", phone: "120（出现严重症状时）", risk_level: "medium", escalate: true, urgent: false, rationale: ["安全规则暂不可用，不能自动判为低风险"] };
+  }
+
+  function riskRank(level) {
+    return { low: 1, medium: 2, high: 3 }[level] || 2;
   }
 
   function renderAiResult(result, provider) {
@@ -1417,10 +1425,17 @@
     const actions = Array.isArray(result.immediate_actions) ? result.immediate_actions : [];
     const rationale = Array.isArray(result.rationale) ? result.rationale : [];
     const phone = String(result.phone || "12345");
-    const phoneDigits = phone.replace(/[^0-9]/g, "") || "12345";
+    const knownPhone = phone.match(/(?:120|110|12315|12345)/);
+    const phoneDigits = knownPhone ? knownPhone[0] : "";
+    const isUrgent = result.risk_level === "high";
+    const phoneAction = phoneDigits
+      ? `<a class="btn ${isUrgent ? "btn-danger" : "btn-secondary"}" href="tel:${phoneDigits}">${icon("phone")}拨打 ${escapeHtml(phoneDigits)}</a>`
+      : `<button class="btn btn-secondary" type="button" disabled>${icon("phone")}联系${escapeHtml(phone)}</button>`;
     area.hidden = false;
+    area.classList.toggle("urgent", isUrgent);
     area.innerHTML = `
       <div class="ai-result-head"><div><span class="eyebrow">AI适老行动卡</span><h3>${escapeHtml(result.summary)}</h3></div>${riskTag(result.risk_level || "low")}</div>
+      ${isUrgent ? `<div class="ai-urgent-banner">${icon("siren")}<strong>先拨打${escapeHtml(phoneDigits || phone)}，不要等待平台或工作人员确认。</strong></div>` : ""}
       <div class="ai-action-grid">
         <div class="ai-result-block"><span>${icon("list-checks")}现在先做</span><ol>${actions.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ol></div>
         <div class="ai-result-block"><span>${icon("route")}地点 / 路线</span><strong>${escapeHtml(result.place_route || "等待工作人员联系")}</strong></div>
@@ -1428,7 +1443,7 @@
         <div class="ai-result-block phone"><span>${icon("phone")}联系电话</span><strong>${escapeHtml(phone)}</strong></div>
       </div>
       ${rationale.length ? `<details class="ai-rationale"><summary>查看判断依据</summary><ul>${rationale.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul></details>` : ""}
-      <div class="ai-result-actions"><small>${icon("cpu")}结果来源：${escapeHtml(provider)} · 高风险仍需人工确认</small><div><a class="btn btn-secondary" href="tel:${phoneDigits}">${icon("phone")}拨打 ${escapeHtml(phone)}</a><button class="btn btn-primary" type="button" data-action="create-event-from-ai">${icon("send")}生成求助事件</button></div></div>
+      <div class="ai-result-actions"><small>${icon("cpu")}结果来源：${escapeHtml(provider)} · ${isUrgent ? "急症先呼救，平台同步留痕" : "AI辅助判断，结果进入人工复核"}</small><div>${phoneAction}<button class="btn btn-primary" type="button" data-action="create-event-from-ai">${icon("send")}${isUrgent ? "同步高风险事件" : "生成求助事件"}</button></div></div>
     `;
     refreshIcons();
     area.scrollIntoView({ behavior: "smooth", block: "nearest" });

@@ -2128,6 +2128,30 @@ textarea.form-control {
   border-radius: 4px;
 }
 
+.ai-result-area.urgent {
+  border-left-color: var(--red);
+}
+
+.ai-urgent-banner {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 13px;
+  padding: 11px 12px;
+  color: #8b1f2b;
+  background: #fff1f2;
+  border: 1px solid #f2c8cd;
+  border-radius: 5px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.ai-urgent-banner svg {
+  flex: 0 0 18px;
+  width: 18px;
+  height: 18px;
+}
+
 .ai-result-head,
 .ai-result-actions {
   display: flex;
