@@ -25,7 +25,7 @@
       nav: [
         { id: "dashboard", label: "机构工作台", icon: "layout-dashboard" },
         { id: "residents", label: "在住老人", icon: "users-round" },
-        { id: "services", label: "服务台账", icon: "clipboard-list" },
+        { id: "services", label: "动态台账", icon: "route" },
         { id: "alerts", label: "预警处置", icon: "siren", count: 3 }
       ]
     },
@@ -37,6 +37,7 @@
       nav: [
         { id: "dashboard", label: "监管总览", icon: "layout-dashboard" },
         { id: "monitoring", label: "人群监测", icon: "map-pinned" },
+        { id: "movements", label: "动向监管", icon: "route" },
         { id: "institutions", label: "机构监管", icon: "building-2" },
         { id: "events", label: "事件中心", icon: "radio-tower", count: 4 }
       ]
@@ -53,12 +54,13 @@
     provider: {
       dashboard: "机构工作台",
       residents: "在住老人",
-      services: "服务台账",
+      services: "旅居动态台账",
       alerts: "预警处置"
     },
     regulator: {
       dashboard: "监管总览",
       monitoring: "人群动态监测",
+      movements: "旅居动向监管",
       institutions: "机构服务质量",
       events: "风险与事件中心"
     }
@@ -73,6 +75,8 @@
     residentRisk: "all",
     eventLevel: "all",
     eventStatus: "all",
+    movementStatus: "all",
+    movementConfirm: "all",
     institutionQuery: "",
     activeStream: null,
     voiceRecorder: null,
@@ -147,9 +151,9 @@
   }
 
   function statusClass(status) {
-    if (["已办结", "已完成", "正常", "在住", "已记录"].includes(status)) return "success";
-    if (["处置中", "待复核", "已转派", "关注"].includes(status)) return "warning";
-    if (["超时", "紧急"].includes(status)) return "danger";
+    if (["已办结", "已完成", "正常", "在住", "已记录", "已返回", "已确认", "已核验"].includes(status)) return "success";
+    if (["处置中", "待复核", "已转派", "关注", "外出中", "就医中", "待出发", "待确认", "重点跟进"].includes(status)) return "warning";
+    if (["超时", "紧急", "超时未归"].includes(status)) return "danger";
     return "neutral";
   }
 
@@ -250,16 +254,20 @@
 
   function renderNav() {
     const items = roleMeta[state.role].nav;
-    sideNav.innerHTML = items.map((item) => `
+    sideNav.innerHTML = items.map((item) => {
+      const count = item.id === "movements" ? (state.data.movementLogs || []).filter((log) => log.regulatorStatus === "待确认").length : item.count;
+      return `
       <button class="nav-item ${item.id === state.page ? "active" : ""}" type="button" data-page="${item.id}">
-        ${icon(item.icon)}<span>${item.label}</span>${item.count ? `<span class="nav-count">${item.count}</span>` : ""}
+        ${icon(item.icon)}<span>${item.label}</span>${count ? `<span class="nav-count">${count}</span>` : ""}
       </button>
-    `).join("");
+    `;
+    }).join("");
     mobileNav.innerHTML = items.map((item) => `
       <button class="${item.id === state.page ? "active" : ""}" type="button" data-page="${item.id}">
         ${icon(item.icon)}<span>${item.label}</span>
       </button>
     `).join("");
+    mobileNav.style.setProperty("--nav-items", items.length);
     refreshIcons();
   }
 
@@ -363,6 +371,38 @@
         </td>
       </tr>
     `).join("");
+  }
+
+  function getMovementLogs() {
+    return Array.isArray(state.data.movementLogs) ? state.data.movementLogs : [];
+  }
+
+  function isMovementActive(log) {
+    return ["外出中", "就医中", "在途中", "超时未归"].includes(log.status);
+  }
+
+  function activeMovementResidentIds(logs = getMovementLogs()) {
+    return new Set(logs.filter(isMovementActive).map((log) => log.residentId));
+  }
+
+  function movementRows(logs, role) {
+    if (!logs.length) return `<tr><td colspan="7"><div class="empty-state">${icon("map-pin-off")}<strong>暂无匹配动向</strong><p>调整筛选条件后再试。</p></div></td></tr>`;
+    return logs.map((log) => {
+      const primaryAction = role === "regulator" && log.regulatorStatus === "待确认"
+        ? `<button class="text-btn" type="button" data-action="movement-confirm" data-id="${log.id}">确认${icon("arrow-right")}</button>`
+        : `<button class="text-btn" type="button" data-action="movement-detail" data-id="${log.id}">查看${icon("arrow-right")}</button>`;
+      return `
+        <tr class="${log.status === "超时未归" ? "movement-row-overdue" : ""}">
+          <td><div class="movement-person-cell">${residentCell({ name: log.resident, id: log.residentId })}<small>${escapeHtml(log.id)} · ${escapeHtml(log.source)}</small></div></td>
+          <td><div class="cell-copy"><strong>${statusTag(log.status)}</strong><small>${escapeHtml(log.type)}</small></div></td>
+          <td><div class="cell-copy movement-destination"><strong>${escapeHtml(log.destination)}</strong><small>${escapeHtml(log.reason)}</small></div></td>
+          <td><div class="cell-copy"><strong>${escapeHtml(log.departAt)}</strong><small>预计返回：${escapeHtml(log.expectedReturn)}</small></div></td>
+          <td><div class="cell-copy"><strong>${escapeHtml(log.responsible)}</strong><small>${escapeHtml(log.responsiblePhone)} · ${escapeHtml(log.companion)}</small></div></td>
+          <td><div class="confirmation-stack"><span><small>机构</small>${statusTag(log.institutionStatus)}</span><span><small>监管</small>${statusTag(log.regulatorStatus)}</span></div></td>
+          <td><div class="table-actions">${primaryAction}${role === "provider" && isMovementActive(log) ? `<button class="text-btn" type="button" data-action="movement-return" data-id="${log.id}">确认返回</button>` : ""}</div></td>
+        </tr>
+      `;
+    }).join("");
   }
 
   function renderElderDashboard() {
@@ -634,7 +674,7 @@
     return `
       <div class="page-toolbar">
         <div><h2>北海银龄康养中心</h2><p>今日值班：周敏 · 数据最后同步：08:30</p></div>
-        <div class="toolbar-actions"><button class="btn btn-primary" type="button" data-action="record-service">${icon("plus")}记录服务</button><button class="btn btn-secondary" type="button" data-action="register-resident">${icon("user-plus")}办理入住</button></div>
+        <div class="toolbar-actions"><button class="btn btn-primary" type="button" data-action="movement-report">${icon("route")}外出报备</button><button class="btn btn-secondary" type="button" data-action="record-service">${icon("plus")}记录服务</button><button class="btn btn-secondary" type="button" data-action="register-resident">${icon("user-plus")}办理入住</button></div>
       </div>
       <div class="stat-grid">
         ${statCard("当前在住", residents.length, "位老人", "users-round", "本月新增 16 人", "positive")}
@@ -705,13 +745,30 @@
   }
 
   function renderProviderServices() {
+    const movements = getMovementLogs();
+    const outsideIds = activeMovementResidentIds(movements);
+    const overdue = movements.filter((log) => log.status === "超时未归");
+    const pending = movements.filter((log) => log.regulatorStatus === "待确认");
+    const inInstitution = Math.max(0, state.data.residents.length - outsideIds.size);
     return `
       <div class="page-toolbar">
-        <div><h2>服务动态台账</h2><p>记录谁在何时为哪位老人提供了什么服务</p></div>
-        <div class="toolbar-actions"><button class="btn btn-primary" type="button" data-action="record-service">${icon("plus")}记录服务</button></div>
+        <div><h2>旅居老人动态台账</h2><p>从机构内服务延伸至外出去向、责任人、返回核验和监管确认</p></div>
+        <div class="toolbar-actions"><button class="btn btn-secondary" type="button" data-action="record-service">${icon("clipboard-plus")}记录服务</button><button class="btn btn-primary" type="button" data-action="movement-report">${icon("route")}外出报备</button></div>
       </div>
-      <section class="panel">
-        <div class="panel-header"><div><h3>最近服务记录</h3><p>已记录 ${state.data.serviceLogs.length} 项 · 自动关联老人档案</p></div><span class="status-tag success">数据已同步</span></div>
+      <div class="stat-grid movement-stat-grid">
+        ${statCard("当前在机构", inInstitution, "人", "building-2", "按最新动向自动更新", "positive")}
+        ${statCard("当前在外", outsideIds.size, "人", "map-pinned", "均已绑定责任人", outsideIds.size ? "warning" : "positive")}
+        ${statCard("超时未归", overdue.length, "人", "triangle-alert", overdue.length ? "需立即跟进" : "暂无异常", overdue.length ? "danger" : "positive")}
+        ${statCard("待监管确认", pending.length, "条", "badge-check", "机构报备后同步推送", pending.length ? "warning" : "positive")}
+      </div>
+      <section class="panel movement-panel">
+        <div class="panel-header"><div><h3>旅居动向记录</h3><p>去向、时限和责任链集中展示，超时记录自动进入预警处置</p></div><span class="status-tag ${overdue.length ? "danger" : "success"}">${overdue.length ? `${overdue.length}条超时` : "动向正常"}</span></div>
+        <div class="table-wrap"><table class="data-table movement-table"><thead><tr><th>老人 / 记录</th><th>当前动向</th><th>去向 / 事由</th><th>出发 / 预计返回</th><th>责任人 / 联络</th><th>双重确认</th><th>操作</th></tr></thead><tbody>
+          ${movementRows(movements, "provider")}
+        </tbody></table></div>
+      </section>
+      <section class="panel service-ledger-panel">
+        <div class="panel-header"><div><h3>机构服务记录</h3><p>已记录 ${state.data.serviceLogs.length} 项 · 与老人档案和动向记录共同构成过程台账</p></div><span class="status-tag success">数据已同步</span></div>
         <div class="table-wrap"><table class="data-table"><thead><tr><th>记录编号</th><th>老人</th><th>服务类型</th><th>执行人</th><th>时间</th><th>服务结果</th><th>状态</th></tr></thead><tbody>
           ${state.data.serviceLogs.map((log) => `<tr><td>${escapeHtml(log.id)}</td><td>${residentCell({ name: log.resident, id: log.residentId })}</td><td><span class="type-tag">${escapeHtml(log.type)}</span></td><td>${escapeHtml(log.staff)}</td><td>${escapeHtml(log.time)}</td><td>${escapeHtml(log.result)}</td><td>${statusTag(log.status)}</td></tr>`).join("")}
         </tbody></table></div>
@@ -740,6 +797,11 @@
     const active = data.events.filter((event) => event.status !== "已办结");
     const high = active.filter((event) => event.level === "high").length;
     const screeningReview = data.residents.filter((resident) => resident.screening && resident.screening.reviewRequired).length;
+    const movementLogs = getMovementLogs();
+    const outside = activeMovementResidentIds(movementLogs).size;
+    const pendingMovement = movementLogs.filter((log) => log.regulatorStatus === "待确认").length;
+    const overdueMovement = movementLogs.filter((log) => log.status === "超时未归").length;
+    const confirmationRate = movementLogs.length ? Math.round((movementLogs.length - pendingMovement) / movementLogs.length * 100) : 100;
     return `
       <div class="page-toolbar">
         <div><h2>自治区旅居养老监管总览</h2><p>数据范围：接入机构 68 家 · 更新时间：今日 08:30</p></div>
@@ -752,8 +814,8 @@
         ${statCard("事件闭环率", "93.6", "%", "circle-check", "较上周提升 4.2%", "positive")}
       </div>
       <section class="focus-panel regulator-focus-panel">
-        <div class="focus-copy"><span class="eyebrow">跨机构质量控制</span><h2>身心风险数据可用性</h2><p>当前有${screeningReview}条快筛结果待人工复核。监管端只看聚合指标与证据状态，不直接查看老人原始音视频。</p><div class="focus-actions"><button class="btn btn-primary" type="button" data-page="monitoring">${icon("chart-no-axes-combined")}查看聚合监测</button><button class="text-btn" type="button" data-page="events">督办未闭环事件${icon("arrow-right")}</button></div></div>
-        <div class="focus-score"><span>复核及时率</span><strong>88.4%</strong><small>目标 ≥95% · 需关注</small></div>
+        <div class="focus-copy"><span class="eyebrow">今日重点核验</span><h2>旅居动向责任链</h2><p>当前${outside}位老人处于机构外，${pendingMovement}条报备待监管确认，${overdueMovement}条超时未归已联动风险预警。重点核验去向、返回时间、责任人和联络方式。</p><div class="focus-actions"><button class="btn btn-primary" type="button" data-page="movements">${icon("route")}进入动向监管</button><button class="text-btn" type="button" data-page="events">督办异常事件${icon("arrow-right")}</button></div></div>
+        <div class="focus-score"><span>责任链确认率</span><strong>${confirmationRate}%</strong><small>${pendingMovement}条待确认 · ${overdueMovement}条重点跟进</small></div>
       </section>
       <div class="panel-grid">
         <section class="panel">
@@ -842,6 +904,38 @@
     `;
   }
 
+  function renderRegulatorMovements() {
+    const allMovements = getMovementLogs();
+    let movements = allMovements.slice();
+    if (state.movementStatus === "active") movements = movements.filter(isMovementActive);
+    if (state.movementStatus === "overdue") movements = movements.filter((log) => log.status === "超时未归");
+    if (state.movementStatus === "returned") movements = movements.filter((log) => log.status === "已返回");
+    if (state.movementStatus === "scheduled") movements = movements.filter((log) => log.status === "待出发");
+    if (state.movementConfirm === "pending") movements = movements.filter((log) => log.regulatorStatus === "待确认");
+    if (state.movementConfirm === "confirmed") movements = movements.filter((log) => log.regulatorStatus !== "待确认");
+    const outsideIds = activeMovementResidentIds(allMovements);
+    const overdue = allMovements.filter((log) => log.status === "超时未归");
+    const pending = allMovements.filter((log) => log.regulatorStatus === "待确认");
+    const crossCity = allMovements.filter((log) => log.type === "跨市行程" && log.status !== "已返回");
+    return `
+      <div class="page-toolbar">
+        <div><h2>旅居老人动向监管</h2><p>确认机构外出报备、责任链和返回状态，异常动向联动事件中心</p></div>
+        <div class="toolbar-actions"><button class="btn btn-secondary" type="button" data-action="export-movements">${icon("download")}导出动向表</button></div>
+      </div>
+      <div class="stat-grid movement-stat-grid">
+        ${statCard("当前在外", outsideIds.size, "人", "map-pinned", "来自机构最新报备", outsideIds.size ? "warning" : "positive")}
+        ${statCard("待监管确认", pending.length, "条", "badge-check", "核验责任人和返回计划", pending.length ? "warning" : "positive")}
+        ${statCard("超时未归", overdue.length, "条", "triangle-alert", overdue.length ? "已联动风险预警" : "暂无异常", overdue.length ? "danger" : "positive")}
+        ${statCard("跨市行程", crossCity.length, "条", "train-front", "关注离住交接完整性")}
+      </div>
+      <section class="panel movement-panel">
+        <div class="panel-header"><div><h3>全区动向清单 <span class="muted-inline">${movements.length}条</span></h3><p>监管确认只核验报备与责任链，不替代机构现场照护责任</p></div><div class="filter-row"><select id="movement-status" class="form-control" style="min-height:40px;width:135px" aria-label="动向状态筛选"><option value="all" ${state.movementStatus === "all" ? "selected" : ""}>全部动向</option><option value="active" ${state.movementStatus === "active" ? "selected" : ""}>当前在外</option><option value="overdue" ${state.movementStatus === "overdue" ? "selected" : ""}>超时未归</option><option value="scheduled" ${state.movementStatus === "scheduled" ? "selected" : ""}>待出发</option><option value="returned" ${state.movementStatus === "returned" ? "selected" : ""}>已返回</option></select><select id="movement-confirm" class="form-control" style="min-height:40px;width:145px" aria-label="监管确认筛选"><option value="all" ${state.movementConfirm === "all" ? "selected" : ""}>全部确认状态</option><option value="pending" ${state.movementConfirm === "pending" ? "selected" : ""}>待监管确认</option><option value="confirmed" ${state.movementConfirm === "confirmed" ? "selected" : ""}>已确认 / 跟进</option></select></div></div>
+        <div class="table-wrap"><table class="data-table movement-table"><thead><tr><th>老人 / 记录</th><th>当前动向</th><th>去向 / 事由</th><th>出发 / 预计返回</th><th>责任人 / 联络</th><th>双重确认</th><th>操作</th></tr></thead><tbody>${movementRows(movements, "regulator")}</tbody></table></div>
+      </section>
+      <section class="panel review-note-panel"><div class="notice">${icon("shield-check")}监管确认重点核验“去哪里、何时回、谁负责、如何联系”。超时未归或责任人缺失的记录不得直接办结，需转入人工预警处置。</div></section>
+    `;
+  }
+
   function renderRegulatorInstitutions() {
     const query = state.institutionQuery.trim().toLowerCase();
     const institutions = state.data.institutions.filter((item) => !query || [item.name, item.city].join(" ").toLowerCase().includes(query));
@@ -884,7 +978,7 @@
   const pageRenderers = {
     elder: { dashboard: renderElderDashboard, profile: renderElderProfile, check: renderElderCheck, requests: renderElderRequests },
     provider: { dashboard: renderProviderDashboard, residents: renderProviderResidents, services: renderProviderServices, alerts: renderProviderAlerts },
-    regulator: { dashboard: renderRegulatorDashboard, monitoring: renderRegulatorMonitoring, institutions: renderRegulatorInstitutions, events: renderRegulatorEvents }
+    regulator: { dashboard: renderRegulatorDashboard, monitoring: renderRegulatorMonitoring, movements: renderRegulatorMovements, institutions: renderRegulatorInstitutions, events: renderRegulatorEvents }
   };
 
   function bindPageEvents() {
@@ -906,6 +1000,10 @@
     if (eventLevel) eventLevel.addEventListener("change", (event) => { state.eventLevel = event.target.value; renderPage(); });
     const eventStatus = document.getElementById("event-status");
     if (eventStatus) eventStatus.addEventListener("change", (event) => { state.eventStatus = event.target.value; renderPage(); });
+    const movementStatus = document.getElementById("movement-status");
+    if (movementStatus) movementStatus.addEventListener("change", (event) => { state.movementStatus = event.target.value; renderPage(); });
+    const movementConfirm = document.getElementById("movement-confirm");
+    if (movementConfirm) movementConfirm.addEventListener("change", (event) => { state.movementConfirm = event.target.value; renderPage(); });
     const providerLevel = document.getElementById("provider-alert-level");
     if (providerLevel) providerLevel.addEventListener("change", (event) => {
       state.eventLevel = event.target.value;
@@ -1504,6 +1602,145 @@
     renderPage();
   }
 
+  function getMovement(id) {
+    return getMovementLogs().find((log) => log.id === id);
+  }
+
+  function openMovementReport() {
+    const activeIds = activeMovementResidentIds();
+    const availableResidents = state.data.residents.filter((resident) => !activeIds.has(resident.id));
+    openModal({
+      title: "新增外出与行程报备",
+      subtitle: "离开机构前必须明确去向、返回计划和机构责任人",
+      wide: true,
+      body: `<form id="movement-report-form" class="form-grid"><label><span>旅居老人</span><select class="form-control" name="residentId" required>${availableResidents.map((resident) => `<option value="${resident.id}">${escapeHtml(resident.name)} · ${escapeHtml(resident.room)}</option>`).join("")}</select><small>已有进行中外出记录的老人需先完成返回核验</small></label><label><span>动向类型</span><select class="form-control" name="type" required><option>临时外出</option><option>集体活动</option><option>外出就医</option><option>康复活动</option><option>探亲访友</option><option>跨市行程</option><option>离住返程</option></select></label><label class="full"><span>目的地</span><input class="form-control" name="destination" placeholder="例如：北海银滩景区东门 / 北海站→南宁东站" required></label><label class="full"><span>外出事由</span><textarea class="form-control" name="reason" placeholder="说明外出目的、活动安排或就医需求" required></textarea></label><label><span>出发时间</span><input class="form-control" name="departAt" value="今日 ${new Date().toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit" })}" required></label><label><span>预计返回</span><input class="form-control" name="expectedReturn" placeholder="例如：今日 18:00 / 计划离住不返回" required></label><label><span>机构责任人</span><input class="form-control" name="responsible" value="工作人员 周敏" placeholder="姓名与岗位" required></label><label><span>责任人联系电话</span><input class="form-control" name="responsiblePhone" placeholder="用于异常情况快速联络" required></label><label><span>陪同方式</span><input class="form-control" name="companion" placeholder="本人外出 / 家属接送 / 机构陪同" required></label><label><span>初始关注等级</span><select class="form-control" name="risk"><option value="low">常规</option><option value="medium">需关注</option><option value="high">高风险</option></select></label><div class="full notice">${icon("shield-check")}提交后同步进入监管端待确认队列。监管确认只核验报备与责任链，机构仍承担现场跟进和按时返回核验责任。</div></form>`,
+      footer: `<button class="btn btn-secondary" type="button" data-action="close-modal">取消</button><button class="btn btn-primary" type="submit" form="movement-report-form">${icon("send")}提交报备</button>`,
+      onOpen: () => document.getElementById("movement-report-form").addEventListener("submit", submitMovementReport)
+    });
+  }
+
+  function submitMovementReport(formEvent) {
+    formEvent.preventDefault();
+    const form = new FormData(formEvent.target);
+    const resident = state.data.residents.find((item) => item.id === form.get("residentId"));
+    if (!resident) return;
+    const id = `MV-${String(Date.now()).slice(-8)}`;
+    const log = {
+      id,
+      residentId: resident.id,
+      resident: resident.name,
+      type: String(form.get("type")),
+      status: String(form.get("departAt")).includes("明日") ? "待出发" : String(form.get("type")) === "外出就医" ? "就医中" : "外出中",
+      risk: String(form.get("risk")),
+      destination: String(form.get("destination")),
+      reason: String(form.get("reason")),
+      departAt: String(form.get("departAt")),
+      expectedReturn: String(form.get("expectedReturn")),
+      actualReturn: "--",
+      responsible: String(form.get("responsible")),
+      responsiblePhone: String(form.get("responsiblePhone")),
+      companion: String(form.get("companion")),
+      source: "机构外出报备",
+      institutionStatus: "已核验",
+      regulatorStatus: "待确认",
+      confirmedBy: "--",
+      confirmedAt: "--",
+      eventId: "",
+      timeline: [{ time: "刚刚", text: "机构核验去向、责任人与返回计划", state: "done" }, { time: "刚刚", text: "已推送监管端确认", state: "current" }]
+    };
+    state.data.movementLogs.unshift(log);
+    resident.fresh = "刚刚";
+    state.data.notifications.unshift({ id: Date.now(), title: "新动向待监管确认", detail: `${resident.name}前往${log.destination}，责任人${log.responsible}`, time: "刚刚", level: "warning", read: false });
+    saveData();
+    closeModal();
+    showToast("外出报备已提交", `${resident.name}的去向和责任链已同步监管端。`);
+    renderPage();
+  }
+
+  function openMovementDetail(id) {
+    const log = getMovement(id);
+    if (!log) return;
+    const eventAction = log.eventId ? `<button class="btn btn-secondary" type="button" data-action="event-detail" data-id="${log.eventId}">${icon("siren")}查看关联事件</button>` : "";
+    const confirmAction = state.role === "regulator" && log.regulatorStatus === "待确认" ? `<button class="btn btn-primary" type="button" data-action="movement-confirm" data-id="${log.id}">${icon("badge-check")}监管确认</button>` : "";
+    const returnAction = state.role === "provider" && isMovementActive(log) ? `<button class="btn btn-primary" type="button" data-action="movement-return" data-id="${log.id}">${icon("log-in")}确认安全返回</button>` : "";
+    openModal({
+      title: `${log.resident} · ${log.type}`,
+      subtitle: `${log.id} · ${log.source}`,
+      wide: true,
+      body: `<div class="movement-detail-head ${log.status === "超时未归" ? "danger" : ""}"><div><span class="eyebrow">当前动向</span><h3>${escapeHtml(log.destination)}</h3><p>${escapeHtml(log.reason)}</p></div>${statusTag(log.status)}</div><div class="profile-grid" style="margin-top:17px"><div class="data-field"><span>出发 / 预计返回</span><strong>${escapeHtml(log.departAt)} / ${escapeHtml(log.expectedReturn)}</strong></div><div class="data-field"><span>实际返回</span><strong>${escapeHtml(log.actualReturn)}</strong></div><div class="data-field"><span>机构责任人</span><strong>${escapeHtml(log.responsible)} · ${escapeHtml(log.responsiblePhone)}</strong></div><div class="data-field"><span>陪同与交接</span><strong>${escapeHtml(log.companion)}</strong></div><div class="data-field"><span>机构核验</span><strong>${escapeHtml(log.institutionStatus)}</strong></div><div class="data-field"><span>监管确认</span><strong>${escapeHtml(log.regulatorStatus)} · ${escapeHtml(log.confirmedBy || "--")}</strong></div></div><section class="movement-timeline"><h3>动向时间线</h3><div class="timeline">${(log.timeline || []).map((item) => `<div class="timeline-item ${item.state}"><span class="timeline-dot"></span><div class="timeline-copy"><strong>${escapeHtml(item.text)}</strong><span>${escapeHtml(item.time)}</span></div></div>`).join("")}</div></section>`,
+      footer: `<button class="btn btn-secondary" type="button" data-action="close-modal">关闭</button>${eventAction}${returnAction}${confirmAction}`
+    });
+  }
+
+  function openMovementConfirmation(id) {
+    const log = getMovement(id);
+    if (!log) return;
+    openModal({
+      title: "监管确认旅居动向",
+      subtitle: `${log.id} · ${log.resident} · ${log.destination}`,
+      body: `<form id="movement-confirm-form" class="form-grid"><label><span>确认结果</span><select class="form-control" name="result"><option>已确认</option><option>重点跟进</option></select></label><label><span>确认人员</span><input class="form-control" name="confirmedBy" value="陈科长 · 自治区民政主管部门" required></label><label class="full"><span>核验备注</span><textarea class="form-control" name="note" required>已核验目的地、预计返回时间、机构责任人及联系电话，责任链完整。</textarea></label><div class="full notice">${icon("info")}若去向、返回时间或责任人信息不完整，应选择“重点跟进”，并由机构补齐后再确认。</div></form>`,
+      footer: `<button class="btn btn-secondary" type="button" data-action="close-modal">取消</button><button class="btn btn-primary" type="submit" form="movement-confirm-form">${icon("badge-check")}完成确认</button>`,
+      onOpen: () => document.getElementById("movement-confirm-form").addEventListener("submit", (event) => submitMovementConfirmation(event, id))
+    });
+  }
+
+  function submitMovementConfirmation(formEvent, id) {
+    formEvent.preventDefault();
+    const log = getMovement(id);
+    if (!log) return;
+    const form = new FormData(formEvent.target);
+    log.regulatorStatus = String(form.get("result"));
+    log.confirmedBy = String(form.get("confirmedBy"));
+    log.confirmedAt = "刚刚";
+    log.confirmationNote = String(form.get("note"));
+    log.timeline = log.timeline || [];
+    log.timeline.push({ time: "刚刚", text: `${log.regulatorStatus}：${log.confirmationNote}`, state: log.regulatorStatus === "已确认" ? "done" : "current" });
+    saveData();
+    closeModal();
+    renderNav();
+    renderPage();
+    showToast("动向确认已完成", `${log.resident}的外出责任链已由监管端留痕。`);
+  }
+
+  function openMovementReturn(id) {
+    const log = getMovement(id);
+    if (!log) return;
+    openModal({
+      title: "确认老人安全返回",
+      subtitle: `${log.id} · ${log.resident} · 原计划${log.expectedReturn}`,
+      body: `<form id="movement-return-form" class="form-grid"><label><span>实际返回时间</span><input class="form-control" name="actualReturn" value="刚刚" required></label><label><span>核验人员</span><input class="form-control" name="checker" value="工作人员 周敏" required></label><label class="full"><span>返回情况</span><textarea class="form-control" name="note" required>已当面确认老人安全返回，身体及情绪状态无明显异常。</textarea></label></form>`,
+      footer: `<button class="btn btn-secondary" type="button" data-action="close-modal">取消</button><button class="btn btn-primary" type="submit" form="movement-return-form">${icon("check-check")}确认返回</button>`,
+      onOpen: () => document.getElementById("movement-return-form").addEventListener("submit", (event) => submitMovementReturn(event, id))
+    });
+  }
+
+  function submitMovementReturn(formEvent, id) {
+    formEvent.preventDefault();
+    const log = getMovement(id);
+    if (!log) return;
+    const form = new FormData(formEvent.target);
+    log.status = "已返回";
+    log.actualReturn = String(form.get("actualReturn"));
+    log.institutionStatus = "已核验";
+    log.timeline = log.timeline || [];
+    log.timeline.push({ time: "刚刚", text: `${form.get("checker")}确认返回：${form.get("note")}`, state: "done" });
+    const resident = state.data.residents.find((item) => item.id === log.residentId);
+    if (resident) resident.fresh = "刚刚";
+    if (log.eventId) {
+      const linkedEvent = getEvent(log.eventId);
+      if (linkedEvent && linkedEvent.status !== "已办结") {
+        linkedEvent.status = "待复核";
+        linkedEvent.deadline = "等待监管复核";
+        linkedEvent.timeline = linkedEvent.timeline || [];
+        linkedEvent.timeline.push({ time: "刚刚", text: "机构确认老人已安全返回，等待监管复核", state: "current" });
+      }
+    }
+    saveData();
+    closeModal();
+    renderPage();
+    showToast("返回状态已核验", `${log.resident}已回到机构，相关预警同步更新。`);
+  }
+
   function openRecordService(residentId = "") {
     openModal({
       title: "记录一次服务",
@@ -1585,7 +1822,7 @@
     openModal({
       title: account.name,
       subtitle: account.org,
-      body: `<div class="profile-grid"><div class="data-field"><span>当前角色</span><strong>${roleMeta[state.role].label}</strong></div><div class="data-field"><span>数据环境</span><strong>本地演示数据</strong></div><div class="data-field"><span>最近登录</span><strong>今日 08:30</strong></div><div class="data-field"><span>权限范围</span><strong>${state.role === "elder" ? "本人档案与求助记录" : state.role === "provider" ? "本机构老人及服务记录" : "全区监测与事件督办"}</strong></div></div><div class="notice" style="margin-top:17px">${icon("database")}当前数据保存在浏览器本地，便于现场演示。退出后数据不会丢失。</div>`,
+      body: `<div class="profile-grid"><div class="data-field"><span>当前角色</span><strong>${roleMeta[state.role].label}</strong></div><div class="data-field"><span>数据环境</span><strong>本地演示数据</strong></div><div class="data-field"><span>最近登录</span><strong>今日 08:30</strong></div><div class="data-field"><span>权限范围</span><strong>${state.role === "elder" ? "本人档案与求助记录" : state.role === "provider" ? "本机构老人、服务及动向记录" : "全区监测、动向确认与事件督办"}</strong></div></div><div class="notice" style="margin-top:17px">${icon("database")}当前数据保存在浏览器本地，便于现场演示。退出后数据不会丢失。</div>`,
       footer: `<button class="btn btn-secondary" type="button" data-action="reset-demo">${icon("rotate-ccw")}恢复初始数据</button><button class="btn btn-primary" type="button" data-action="close-modal">关闭</button>`
     });
   }
@@ -1600,6 +1837,18 @@
     anchor.click();
     URL.revokeObjectURL(url);
     showToast("事件清单已导出", "CSV文件已下载到浏览器默认下载目录。", "success");
+  }
+
+  function exportMovements() {
+    const rows = ["动向编号,老人,动向类型,当前状态,目的地,事由,出发时间,预计返回,实际返回,机构责任人,联系电话,机构核验,监管确认", ...getMovementLogs().map((log) => [log.id, log.resident, log.type, log.status, log.destination, log.reason, log.departAt, log.expectedReturn, log.actualReturn, log.responsible, log.responsiblePhone, log.institutionStatus, log.regulatorStatus].map((value) => `"${String(value).replaceAll('"', '""')}"`).join(","))];
+    const blob = new Blob(["\ufeff" + rows.join("\n")], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = `旅居老人动向台账_${new Date().toISOString().slice(0, 10)}.csv`;
+    anchor.click();
+    URL.revokeObjectURL(url);
+    showToast("动向台账已导出", "去向、责任人与确认状态已生成CSV文件。", "success");
   }
 
   document.querySelectorAll(".role-option").forEach((button) => button.addEventListener("click", () => setSelectedRole(button.dataset.role)));
@@ -1647,11 +1896,16 @@
     if (action === "handle-event") openHandleEvent(actionButton.dataset.id);
     if (action === "resident-detail") openResidentDetail(actionButton.dataset.id);
     if (action === "institution-detail") openInstitutionDetail(actionButton.dataset.id);
+    if (action === "movement-report") openMovementReport();
+    if (action === "movement-detail") openMovementDetail(actionButton.dataset.id);
+    if (action === "movement-confirm") openMovementConfirmation(actionButton.dataset.id);
+    if (action === "movement-return") openMovementReturn(actionButton.dataset.id);
     if (action === "record-service") openRecordService(actionButton.dataset.resident || "");
     if (action === "register-resident") openRegisterResident();
     if (action === "edit-profile") openEditProfile();
     if (action === "refresh-data") { state.data = loadData(); renderPage(); showToast("数据已刷新", "当前台账已重新载入。"); }
     if (action === "export-report") exportReport();
+    if (action === "export-movements") exportMovements();
     if (action === "read-notifications") { state.data.notifications.forEach((item) => { item.read = true; }); saveData(); closeModal(); document.getElementById("notification-count").textContent = "0"; showToast("通知已全部标记为已读"); }
     if (action === "reset-demo") { state.data = cloneSeed(); saveData(); closeModal(); renderShell(); showToast("演示数据已恢复", "所有角色将重新看到初始数据。", "warning"); }
   });

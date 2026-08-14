@@ -1091,6 +1091,76 @@ textarea:focus-visible,
   table-layout: auto;
 }
 
+.movement-table {
+  min-width: 920px;
+  table-layout: fixed;
+}
+
+.movement-table th:nth-child(1) { width: 17%; }
+.movement-table th:nth-child(2) { width: 9%; }
+.movement-table th:nth-child(3) { width: 19%; }
+.movement-table th:nth-child(4) { width: 14%; }
+.movement-table th:nth-child(5) { width: 17%; }
+.movement-table th:nth-child(6) { width: 14%; }
+.movement-table th:nth-child(7) { width: 10%; }
+
+.movement-table th,
+.movement-table td {
+  padding: 11px 10px;
+}
+
+.movement-destination {
+  min-width: 0;
+}
+
+.movement-destination small {
+  line-height: 1.55;
+  white-space: normal;
+}
+
+.movement-row-overdue {
+  background: #fff8f7;
+}
+
+.movement-row-overdue:hover {
+  background: #fff2f0 !important;
+}
+
+.table-actions {
+  display: grid;
+  justify-items: start;
+  gap: 7px;
+}
+
+.table-actions .text-btn {
+  white-space: nowrap;
+}
+
+.movement-person-cell > small {
+  display: block;
+  margin: 6px 0 0 41px;
+  color: var(--muted);
+  font-size: 9px;
+  line-height: 1.45;
+}
+
+.confirmation-stack {
+  display: grid;
+  gap: 7px;
+}
+
+.confirmation-stack > span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.confirmation-stack small {
+  flex: 0 0 25px;
+  color: var(--muted);
+  font-size: 9px;
+}
+
 .data-table th,
 .data-table td {
   padding: 12px 14px;
@@ -1565,6 +1635,44 @@ textarea.form-control {
 
 .timeline-copy strong { display: block; font-size: 12px; }
 .timeline-copy span { display: block; margin-top: 3px; color: var(--muted); font-size: 10px; line-height: 1.5; }
+
+.movement-detail-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 17px;
+  background: var(--brand-soft);
+  border-left: 4px solid var(--brand);
+  border-radius: 5px;
+}
+
+.movement-detail-head.danger {
+  background: var(--red-soft);
+  border-left-color: var(--red);
+}
+
+.movement-detail-head h3 {
+  margin: 4px 0 0;
+  font-size: 17px;
+}
+
+.movement-detail-head p {
+  margin: 7px 0 0;
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+.movement-timeline {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+
+.movement-timeline h3 {
+  margin: 0 0 14px;
+  font-size: 14px;
+}
 
 .bar-chart {
   display: grid;
@@ -2305,7 +2413,7 @@ textarea.form-control {
     inset: auto 0 0;
     z-index: 32;
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(var(--nav-items, 4), 1fr);
     min-height: 64px;
     padding-bottom: env(safe-area-inset-bottom);
     background: rgba(255,255,255,.98);
@@ -2324,6 +2432,7 @@ textarea.form-control {
   }
   .mobile-nav button svg { width: 19px; height: 19px; }
   .mobile-nav button.active { color: var(--brand); }
+  .movement-detail-head { flex-direction: column; }
 }
 
 @media (max-width: 390px) {
