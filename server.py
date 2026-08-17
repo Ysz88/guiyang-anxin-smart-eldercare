@@ -50,6 +50,7 @@ def config_candidates() -> list[Path]:
     candidates = [Path(explicit)] if explicit else []
     candidates.extend(
         [
+            ROOT / "deepseek.env.local",
             desktop / "deepseek.env.local",
             desktop / "deep seekapi.env.local",
             desktop / "deepseekapi.env.local",

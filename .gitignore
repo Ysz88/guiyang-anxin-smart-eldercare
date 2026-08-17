@@ -1,7 +1,9 @@
 # Local secrets and machine-specific configuration
 .env
 .env.*
+!.env.example
 *.env.local
+deepseek.env.local
 deepseek*.txt
 deepseek*.json
 
@@ -9,6 +11,7 @@ deepseek*.json
 runtime/*.db
 runtime/*.db-shm
 runtime/*.db-wal
+runtime/*.log
 
 # Runtime and editor files
 __pycache__/

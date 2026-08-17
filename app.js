@@ -4,6 +4,8 @@
   const STORAGE_KEY = "guiyang-v1-data";
   const SESSION_KEY = "guiyang-v1-session";
   const LOCAL_BACKEND_ENABLED = ["127.0.0.1", "localhost"].includes(window.location.hostname) && window.location.protocol.startsWith("http");
+  const VERCEL_AI_ENABLED = window.location.hostname.endsWith(".vercel.app");
+  const AI_BACKEND_ENABLED = LOCAL_BACKEND_ENABLED || VERCEL_AI_ENABLED;
   let backendSaveQueue = Promise.resolve();
 
   const roleMeta = {
@@ -1272,13 +1274,43 @@
     }
   }
 
-  function startAiSpeech() {
+  function isEmbeddedSpeechBrowser() {
+    const agent = String(navigator.userAgent || "").toLowerCase();
+    return /baidubrowser|baiduboxapp|micromessenger|qqbrowser|mqqbrowser|ucbrowser|quark/.test(agent);
+  }
+
+  function speechErrorCopy(errorCode) {
+    const embedded = isEmbeddedSpeechBrowser();
+    const messages = {
+      "not-allowed": ["麦克风权限未开启", "请在浏览器网站设置和手机应用权限中允许麦克风。"],
+      "service-not-allowed": ["浏览器禁止了语音服务", embedded ? "请复制网址到系统Chrome或Edge打开。" : "请检查浏览器语音服务和网站权限。"],
+      "audio-capture": ["未检测到可用麦克风", "请关闭占用麦克风的应用，或检查手机麦克风权限。"],
+      network: ["语音服务连接失败", embedded ? "当前内置浏览器兼容性不足，请用系统Chrome或Edge打开。" : "请检查网络后重试，也可以使用键盘语音输入。"],
+      "no-speech": ["暂时没有听清", "请靠近麦克风慢慢说，或直接在输入框中描述问题。"],
+      aborted: ["语音识别已停止", "可以再次点击麦克风重试。"],
+      "language-not-supported": ["当前浏览器不支持中文识别", "请使用系统Chrome或Edge，或使用键盘语音输入。"],
+    };
+    return messages[errorCode] || ["语音识别未完成", embedded ? "当前内置浏览器兼容性不足，请用系统Chrome或Edge打开。" : "可以重试，或使用键盘语音输入。"];
+  }
+
+  async function startAiSpeech() {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     const input = document.getElementById("ai-dialog-input");
     const status = document.getElementById("speech-status");
     const button = document.getElementById("ai-mic-btn");
     if (!SpeechRecognition) {
-      status.textContent = "当前浏览器不支持语音转文字，请在右侧输入问题";
+      const detail = isEmbeddedSpeechBrowser()
+        ? "当前内置浏览器不支持网页语音，请用系统Chrome或Edge打开，或点击输入框使用键盘麦克风。"
+        : "当前浏览器不支持网页语音，请点击输入框使用键盘麦克风。";
+      status.textContent = detail;
+      showToast("网页语音不可用", detail, "warning");
+      input.focus();
+      return;
+    }
+
+    if (!window.isSecureContext) {
+      status.textContent = "麦克风需要通过HTTPS安全网址使用";
+      showToast("当前网址不安全", "请通过HTTPS站点或本机localhost打开。", "warning");
       input.focus();
       return;
     }
@@ -1288,28 +1320,73 @@
       return;
     }
 
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      status.textContent = "当前浏览器无法申请麦克风权限";
+      showToast("麦克风不可用", "请使用系统Chrome或Edge，或点击输入框使用键盘麦克风。", "warning");
+      input.focus();
+      return;
+    }
+
+    try {
+      const permissionStream = await navigator.mediaDevices.getUserMedia({
+        audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
+        video: false,
+      });
+      permissionStream.getTracks().forEach((track) => track.stop());
+    } catch (error) {
+      const code = error && (error.name === "NotAllowedError" || error.name === "SecurityError")
+        ? "not-allowed"
+        : error && error.name === "NotFoundError"
+          ? "audio-capture"
+          : "unknown";
+      const [title, detail] = speechErrorCopy(code);
+      status.textContent = detail;
+      showToast(title, detail, "warning");
+      input.focus();
+      return;
+    }
+
     const recognition = new SpeechRecognition();
     recognition.lang = "zh-CN";
     recognition.continuous = false;
     recognition.interimResults = true;
+    recognition.maxAlternatives = 1;
     state.speechRecognition = recognition;
     button.classList.add("listening");
     button.innerHTML = icon("square");
     status.textContent = "正在听，请慢慢说...";
     refreshIcons();
 
+    let submitted = false;
+    let errorHandled = false;
+
     recognition.onresult = (event) => {
       let transcript = "";
-      for (let index = event.resultIndex; index < event.results.length; index += 1) {
+      for (let index = 0; index < event.results.length; index += 1) {
         transcript += event.results[index][0].transcript;
       }
+      transcript = transcript.trim();
       input.value = transcript;
-      status.textContent = event.results[event.results.length - 1].isFinal ? "已转成文字，正在提交..." : `正在识别：${transcript}`;
-      if (event.results[event.results.length - 1].isFinal) sendAiMessage(transcript);
+      const finalResult = event.results[event.results.length - 1].isFinal;
+      status.textContent = finalResult ? "已转成文字，正在提交..." : `正在识别：${transcript}`;
+      if (finalResult && transcript && !submitted) {
+        submitted = true;
+        sendAiMessage(transcript);
+      }
     };
-    recognition.onerror = () => {
-      status.textContent = "没有听清，请点击麦克风重试或输入文字";
-      showToast("语音识别未完成", "可以直接在输入框中描述问题。", "warning");
+    recognition.onerror = (event) => {
+      errorHandled = true;
+      const [title, detail] = speechErrorCopy(String(event.error || "unknown"));
+      status.textContent = detail;
+      showToast(title, detail, "warning");
+      input.focus();
+    };
+    recognition.onnomatch = () => {
+      errorHandled = true;
+      const [title, detail] = speechErrorCopy("no-speech");
+      status.textContent = detail;
+      showToast(title, detail, "warning");
+      input.focus();
     };
     recognition.onend = () => {
       state.speechRecognition = null;
@@ -1317,9 +1394,23 @@
         button.classList.remove("listening");
         button.innerHTML = icon("mic");
       }
+      if (!submitted && !errorHandled && !input.value.trim()) {
+        status.textContent = "没有收到语音，请靠近麦克风重试或使用键盘语音输入";
+      }
       refreshIcons();
     };
-    recognition.start();
+    try {
+      recognition.start();
+    } catch (error) {
+      state.speechRecognition = null;
+      button.classList.remove("listening");
+      button.innerHTML = icon("mic");
+      const [title, detail] = speechErrorCopy("unknown");
+      status.textContent = detail;
+      showToast(title, detail, "warning");
+      input.focus();
+      refreshIcons();
+    }
   }
 
   function appendAiBubble(role, content) {
@@ -1408,7 +1499,7 @@
     if (safetyDecision.urgent) {
       responseData = safetyDecision;
       provider = `急症安全分流 · ${safetyDecision.rule_label}`;
-    } else if (!LOCAL_BACKEND_ENABLED) {
+    } else if (!AI_BACKEND_ENABLED) {
       responseData = safetyDecision;
       provider = `在线安全分流 · ${safetyDecision.rule_label}`;
     } else {

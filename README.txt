@@ -4,6 +4,7 @@
 1. 推荐双击“启动作品.bat”，访问 http://127.0.0.1:4173/。
 2. 首次启动会自动创建 SQLite 业务数据库 runtime/guiyang_elders.db，无需安装数据库软件。
 3. 本地完整服务支持三类角色共享数据、规范化业务表、操作审计和 DeepSeek 安全代理。
+   DeepSeek密钥保存在项目根目录deepseek.env.local，该文件已被.gitignore排除，不进入Git和源码压缩包。
 4. 直接双击 index.html 或访问 GitHub Pages 时使用浏览器独立数据，适合备用浏览，但不具备跨设备共享能力。
 5. 测试账号：老人端 elder、机构端 center、监管端 admin，密码均为 123456。
 
