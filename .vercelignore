@@ -17,6 +17,8 @@ scripts/
 *.ps1
 *.sql
 *.md
+*.json
+!vercel.json
 README.txt
 .env*
 deepseek.env.*
