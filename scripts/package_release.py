@@ -16,16 +16,16 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 RELEASE_NAME = "桂养安心_源码16.0"
-INCLUDE_TOP = {".py", ".js", ".html", ".css", ".sql", ".md", ".bat", ".json"}
+INCLUDE_TOP = {".py", ".js", ".html", ".css", ".sql", ".md", ".bat", ".ps1", ".json"}
 INCLUDE_DIRS = {"assets": None, "data": {".json"}, "api": {".js"}, "scripts": {".py", ".mjs", ".sh"}, "测试结果": {".json", ".md"}}
-TOP_FILES_EXTRA = {"deepseek.env.example", ".gitignore"}
+TOP_FILES_EXTRA = {"deepseek.env.example", ".gitignore", ".vercelignore"}
 FORBIDDEN_NAME = re.compile(r"(^|/)(runtime|__pycache__|\.git|node_modules|backups)(/|$)|deepseek\.env(\.local|\.txt)|demo_credentials|radar_ai_cache|\.(db|sqlite|sqlite3|pyc|log)$|-(wal|shm)$", re.I)
 SECRET_PATTERNS = [
     re.compile(r"sk-[A-Za-z0-9]{16,}"),
     re.compile(r"DEEPSEEK_API_KEY\s*=\s*['\"]?[A-Za-z0-9_\-]{12,}"),
     re.compile(r"-----BEGIN [A-Z ]*PRIVATE KEY-----"),
 ]
-TEXT_SUFFIXES = {".py", ".js", ".mjs", ".html", ".css", ".sql", ".md", ".bat", ".json", ".sh", ".example", ".txt", ".svg"}
+TEXT_SUFFIXES = {".py", ".js", ".mjs", ".html", ".css", ".sql", ".md", ".bat", ".ps1", ".json", ".sh", ".example", ".txt", ".svg"}
 
 
 def collect() -> list[Path]:
