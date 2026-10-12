@@ -2,22 +2,47 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="description" content="广西旅居老人智能建档、动态台账、风险预警与应急联动服务原型">
+  <meta name="theme-color" content="#0b2b28">
   <title>桂养安心·旅居智管</title>
-  <link rel="stylesheet" href="styles.css?v=4">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='10' fill='%230f6657'/%3E%3Cg fill='none' stroke='%23f0d49c' stroke-width='2.4' stroke-linejoin='round'%3E%3Crect x='11.5' y='11.5' width='17' height='17'/%3E%3Crect x='11.5' y='11.5' width='17' height='17' transform='rotate(45 20 20)'/%3E%3C/g%3E%3Ccircle cx='20' cy='20' r='3.4' fill='%23f0d49c'/%3E%3C/svg%3E">
+  <!-- tokens.css is loaded twice on purpose: the <link> is authoritative and works over
+       file:// as well as http://, while the @import inside styles.css keeps the
+       stylesheet self-contained for any tool that reads it on its own. -->
+  <link rel="stylesheet" href="tokens.css?v=16.0">
+  <link rel="stylesheet" href="styles.css?v=16.0">
 </head>
 <body>
   <a class="skip-link" href="#main-content">跳到主要内容</a>
+
+  <!-- 品牌标识：壮锦“八角星纹”（铜鼓太阳纹）置于玉青底上 -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <defs>
+      <linearGradient id="gy-mark-bg" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#1a8c78"/>
+        <stop offset="1" stop-color="#0c5046"/>
+      </linearGradient>
+      <symbol id="gy-mark" viewBox="0 0 40 40">
+        <rect width="40" height="40" rx="10" fill="url(#gy-mark-bg)"/>
+        <rect x="0.5" y="0.5" width="39" height="39" rx="9.5" fill="none" stroke="#ffffff" stroke-opacity="0.18"/>
+        <g fill="none" stroke="#f0d49c" stroke-width="2" stroke-linejoin="round">
+          <rect x="11.5" y="11.5" width="17" height="17"/>
+          <rect x="11.5" y="11.5" width="17" height="17" transform="rotate(45 20 20)"/>
+        </g>
+        <circle cx="20" cy="20" r="3.4" fill="#f0d49c"/>
+      </symbol>
+    </defs>
+  </svg>
 
   <section id="login-view" class="login-view" aria-labelledby="login-title">
     <div class="login-grid">
       <main class="login-main">
         <div class="brand brand-login" aria-label="桂养安心旅居智管">
-          <span class="brand-mark"><i data-lucide="shield-check" aria-hidden="true"></i></span>
+          <span class="brand-mark"><svg aria-hidden="true"><use href="#gy-mark"></use></svg></span>
           <span>
             <strong>桂养安心</strong>
-            <small>旅居养老智慧监管平台</small>
+            <small>广西旅居养老智慧监管平台</small>
           </span>
         </div>
 
@@ -31,14 +56,17 @@
           <button class="role-option active" type="button" data-role="elder" role="tab" aria-selected="true">
             <i data-lucide="heart-handshake" aria-hidden="true"></i>
             <span>老人端</span>
+            <small>求助 · 打卡 · 档案</small>
           </button>
           <button class="role-option" type="button" data-role="provider" role="tab" aria-selected="false">
             <i data-lucide="building-2" aria-hidden="true"></i>
             <span>机构端</span>
+            <small>台账 · 报备 · 预警</small>
           </button>
           <button class="role-option" type="button" data-role="regulator" role="tab" aria-selected="false">
             <i data-lucide="landmark" aria-hidden="true"></i>
             <span>监管端</span>
+            <small>监测 · 督办 · 调度</small>
           </button>
         </div>
 
@@ -54,7 +82,7 @@
             <span>密码</span>
             <span class="input-wrap">
               <i data-lucide="lock-keyhole" aria-hidden="true"></i>
-              <input id="login-password" name="password" type="password" autocomplete="current-password" value="123456" required>
+              <input id="login-password" name="password" type="password" autocomplete="current-password" required>
               <button id="toggle-password" class="icon-btn inline-icon" type="button" aria-label="显示密码" title="显示密码">
                 <i data-lucide="eye" aria-hidden="true"></i>
               </button>
@@ -69,35 +97,50 @@
 
         <div class="demo-account" aria-label="测试账号">
           <i data-lucide="key-round" aria-hidden="true"></i>
-          <span id="demo-account-text">测试账号：elder / 123456</span>
+          <span id="demo-account-text">演示账号：elder（本机生成独立密码）</span>
         </div>
+        <button class="text-btn login-demo-guide" type="button" data-action="demo-guide"><i data-lucide="presentation" aria-hidden="true"></i>演示指引：一位北海旅居老人的一天</button>
         <p class="login-meta"><i data-lucide="shield" aria-hidden="true"></i> 测试数据已脱敏，健康筛查结果不用于医学诊断</p>
+        <p class="login-copyright">桂养安心 · 广西旅居养老智慧监管平台（演示原型 16.0）</p>
       </main>
 
       <aside class="login-status" aria-label="平台实时态势">
-        <div class="status-topline">
-          <span><span class="live-dot" aria-hidden="true"></span>平台运行正常</span>
-          <span>08:30 更新</span>
+        <div class="login-brand">
+          <div class="brand">
+            <span class="brand-mark"><svg aria-hidden="true"><use href="#gy-mark"></use></svg></span>
+            <span>
+              <strong>桂养安心</strong>
+              <small>广西旅居养老智慧监管平台</small>
+            </span>
+          </div>
+          <div class="status-topline">
+            <span><span class="live-dot" aria-hidden="true"></span>演示环境</span>
+          </div>
         </div>
-        <div class="status-copy">
-          <p class="eyebrow">今日全区态势</p>
-          <h2>旅居老人服务与风险状态</h2>
+        <div class="login-status-head">
+          <p class="eyebrow">AI 赋能旅居康养监管</p>
+          <h2>底数清晰 · 管控精准 · 处置高效</h2>
+          <p>旅居老人智能建档与动态台账、服务质量监管、风险预警与应急联动调度，贯通老人、机构与主管部门三端。</p>
         </div>
-        <div class="login-metrics">
-          <div><strong>1,284</strong><span>当前在桂</span></div>
-          <div><strong>68</strong><span>接入机构</span></div>
-          <div><strong>17</strong><span>处置中预警</span></div>
-          <div><strong>93.6%</strong><span>事件闭环率</span></div>
-        </div>
-        <div class="status-map" aria-label="广西重点旅居区域状态示意">
-          <div class="map-grid" aria-hidden="true"></div>
-          <span class="map-node node-guilin"><b>桂林</b><small>318人</small></span>
-          <span class="map-node node-nanning"><b>南宁</b><small>402人</small></span>
-          <span class="map-node node-beihai"><b>北海</b><small>276人</small></span>
-          <span class="map-node node-bama"><b>巴马</b><small>145人</small></span>
+        <div class="status-map-wrap">
+        <div class="status-map" aria-label="广西样本机构分布示意">
+          <img src="assets/login-map.svg" alt="" aria-hidden="true">
+          <span class="map-node node-guilin"><b>桂林</b></span>
+          <span class="map-node node-bama warn"><b>巴马</b><small>待处理预警</small></span>
+          <span class="map-node node-nanning"><b>南宁</b></span>
+          <span class="map-node node-qinzhou left"><b>钦州</b></span>
+          <span class="map-node node-fangchenggang left warn"><b>防城港</b></span>
+          <span class="map-node node-beihai"><b>北海</b></span>
           <div class="map-legend"><span><i class="legend-dot normal"></i>运行正常</span><span><i class="legend-dot warning"></i>存在待处理预警</span></div>
         </div>
-        <p class="status-foot">自治区级数据看板 · 可运行服务原型</p>
+        </div>
+        <div class="login-metrics" aria-label="脱敏样本态势">
+          <div><strong id="login-resident-count">—</strong><span>旅居老人</span></div>
+          <div><strong id="login-institution-count">—</strong><span>接入机构</span></div>
+          <div><strong id="login-alert-count">—</strong><span>待处理预警</span></div>
+          <div><strong id="login-closure-rate">4</strong><span>AI 智能体</span></div>
+        </div>
+        <p class="status-foot">演示数据为合成样本，地图仅作示意</p>
       </aside>
     </div>
   </section>
@@ -105,8 +148,8 @@
   <div id="app-view" class="app-shell" hidden>
     <aside id="sidebar" class="sidebar">
       <div class="brand brand-app">
-        <span class="brand-mark"><i data-lucide="shield-check" aria-hidden="true"></i></span>
-        <span><strong>桂养安心</strong><small>旅居智管</small></span>
+        <span class="brand-mark"><svg aria-hidden="true"><use href="#gy-mark"></use></svg></span>
+        <span><strong>桂养安心</strong><small>旅居智管 · 广西</small></span>
       </div>
       <div id="role-badge" class="role-badge"></div>
       <nav id="side-nav" class="side-nav" aria-label="主导航"></nav>
@@ -127,8 +170,12 @@
         <div class="page-context">
           <span id="page-eyebrow" class="eyebrow"></span>
           <h1 id="page-title">工作台</h1>
+          <span class="demo-mark" title="页面中的老人、机构和事件均为合成演示数据">演示数据</span>
         </div>
         <div class="topbar-actions">
+          <button id="topbar-sos" class="btn btn-danger topbar-sos" type="button" data-action="sos-press" aria-label="一键呼救" hidden><i data-lucide="siren" aria-hidden="true"></i><span>一键呼救</span></button>
+          <button class="btn btn-ghost demo-guide-btn" type="button" data-action="demo-guide" title="演示指引"><i data-lucide="presentation" aria-hidden="true"></i><span>演示指引</span></button>
+          <button class="icon-btn" type="button" data-action="refresh-data" aria-label="刷新业务台账" title="刷新业务台账"><i data-lucide="refresh-cw" aria-hidden="true"></i></button>
           <label id="global-search-wrap" class="global-search">
             <i data-lucide="search" aria-hidden="true"></i>
             <input id="global-search" type="search" placeholder="搜索老人、机构或事件" aria-label="全局搜索">
@@ -153,9 +200,11 @@
   <div id="modal-root"></div>
   <div id="toast-root" class="toast-root" aria-live="polite" aria-atomic="true"></div>
 
-  <script src="assets/lucide.min.js?v=3"></script>
-  <script src="data.js?v=5"></script>
-  <script src="triage.js?v=5"></script>
-  <script src="app.js?v=6"></script>
+  <script src="assets/lucide.min.js?v=16.0"></script>
+  <script src="assets/echarts.min.js?v=16.0"></script>
+  <script src="assets/guangxi-geo.js?v=16.0"></script>
+  <script src="data.js?v=16.0"></script>
+  <script src="triage.js?v=16.0"></script>
+  <script src="app.js?v=16.0"></script>
 </body>
 </html>

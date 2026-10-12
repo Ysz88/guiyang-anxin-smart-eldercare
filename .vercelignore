@@ -1,0 +1,24 @@
+# Publish the web app and API functions; keep local service files out of hosting.
+.git/
+.vercel/
+runtime/
+__pycache__/
+node_modules/
+scripts/
+测试结果/
+*.py
+*.pyc
+*.db
+*.db-wal
+*.db-shm
+*.sqlite*
+*.zip
+*.bat
+*.ps1
+*.sql
+*.md
+README.txt
+.env*
+deepseek.env.*
+seed.json
+data/

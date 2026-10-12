@@ -1,21 +1,32 @@
-# Local secrets and machine-specific configuration
+# 私有文件：不要提交、不要打包（制作交付包请用 python scripts/package_release.py）
+deepseek.env.local
+deepseek.env.local.txt
+deepseek.env.txt
+
+# 运行数据：数据库、备份、账号密码文件、模型缓存
+runtime/
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+
+# 缓存
+__pycache__/
+*.pyc
+node_modules/
+
+# Hosting metadata and private backup archives
+.vercel/
+*.zip
 .env
 .env.*
 !.env.example
-*.env.local
-deepseek.env.local
+.env.local
+.env.*.local
 deepseek*.txt
 deepseek*.json
-
-# Local SQLite runtime data
-runtime/*.db
-runtime/*.db-shm
-runtime/*.db-wal
-runtime/*.log
-
-# Runtime and editor files
-__pycache__/
-*.pyc
 .vscode/
 .idea/
 Thumbs.db

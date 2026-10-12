@@ -1,3 +1,9 @@
+-- 桂养安心·旅居智管 数据库建表脚本 (schema v2)
+-- 补齐说明：2026-08-23 优化源码包缺少本文件，而 database.py 第18行
+-- SCHEMA_PATH = ROOT / "database_schema.sql" 在 initialize() 中直接读取，
+-- 缺失会导致「启动作品.bat / python server.py」抛 FileNotFoundError 而无法启动。
+-- 本文件按 database.py 实际读写的表与字段逆向补齐（含 sos_sessions、sos_revision）。
+
 PRAGMA foreign_keys = ON;
 
 CREATE TABLE IF NOT EXISTS schema_meta (
@@ -74,6 +80,8 @@ CREATE TABLE IF NOT EXISTS movement_records (
   reason TEXT NOT NULL,
   depart_at TEXT NOT NULL,
   expected_return TEXT NOT NULL,
+  -- v2 增量字段：可计算的预计返回时间（ISO8601），供前端每15秒比对超时
+  expected_return_at TEXT NOT NULL DEFAULT '',
   actual_return TEXT NOT NULL DEFAULT '',
   responsible_person TEXT NOT NULL,
   responsible_phone TEXT NOT NULL,
@@ -115,7 +123,11 @@ CREATE TABLE IF NOT EXISTS risk_events (
   summary TEXT NOT NULL,
   recommended_action TEXT NOT NULL,
   payload_json TEXT NOT NULL,
-  updated_at TEXT NOT NULL
+  updated_at TEXT NOT NULL,
+  -- v3：处置时限由服务器控制（毫秒）。按时 / 超时由 closed_at_ms 与 due_at_ms 比较得出，不再依赖页面文案
+  created_at_ms INTEGER,
+  due_at_ms INTEGER,
+  closed_at_ms INTEGER
 );
 
 CREATE TABLE IF NOT EXISTS event_timeline (
@@ -147,6 +159,42 @@ CREATE TABLE IF NOT EXISTS audit_logs (
   detail_json TEXT NOT NULL
 );
 
+-- ===== v2 新增：应急呼救（安心应答）只追加台账 =====
+-- 与 app_snapshot 解耦：机构端提交整体状态时不会覆盖/删除老人端刚创建的呼救工单。
+-- 冲突策略：updated_at_ms last-write-wins（database.py::_upsert_sos 校验旧数据不覆盖新数据）。
+CREATE TABLE IF NOT EXISTS sos_sessions (
+  id TEXT PRIMARY KEY,
+  resident_id TEXT NOT NULL DEFAULT '',
+  resident_name TEXT NOT NULL DEFAULT '',
+  trigger_source TEXT NOT NULL DEFAULT '',
+  risk_level TEXT NOT NULL DEFAULT 'high',
+  status TEXT NOT NULL DEFAULT '',
+  escalation INTEGER NOT NULL DEFAULT 1,
+  callback_status TEXT NOT NULL DEFAULT '',
+  callback_attempts INTEGER NOT NULL DEFAULT 0,
+  claimed_by TEXT NOT NULL DEFAULT '',
+  response_seconds REAL,
+  linked_event_id TEXT NOT NULL DEFAULT '',
+  created_label TEXT NOT NULL DEFAULT '',
+  resolved_label TEXT NOT NULL DEFAULT '',
+  payload_json TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  -- v2 增量字段：毫秒时间戳，用于跨设备轻量轮询的 ?since= 版本比较
+  updated_at_ms INTEGER NOT NULL DEFAULT 0
+);
+
+-- 呼救台账的单调递增修订号，供 GET /api/sos?since=N 在无变化时只回版本号
+CREATE TABLE IF NOT EXISTS sos_revision (
+  id INTEGER PRIMARY KEY CHECK (id = 1),
+  revision INTEGER NOT NULL DEFAULT 0,
+  updated_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS state_revision (
+  id INTEGER PRIMARY KEY CHECK (id = 1),
+  revision INTEGER NOT NULL DEFAULT 0
+);
+
 CREATE INDEX IF NOT EXISTS idx_stays_resident ON stays(resident_id);
 CREATE INDEX IF NOT EXISTS idx_movements_resident_status ON movement_records(resident_id, movement_status);
 CREATE INDEX IF NOT EXISTS idx_movements_regulator ON movement_records(regulator_status);
@@ -154,6 +202,8 @@ CREATE INDEX IF NOT EXISTS idx_services_resident ON service_records(resident_id)
 CREATE INDEX IF NOT EXISTS idx_events_status_level ON risk_events(status, risk_level);
 CREATE INDEX IF NOT EXISTS idx_timeline_event ON event_timeline(event_id, sequence_no);
 CREATE INDEX IF NOT EXISTS idx_audit_occurred ON audit_logs(occurred_at DESC);
+CREATE INDEX IF NOT EXISTS idx_sos_updated ON sos_sessions(updated_at_ms DESC, id DESC);
+CREATE INDEX IF NOT EXISTS idx_events_due ON risk_events(status, due_at_ms);
 
-INSERT INTO schema_meta(key, value) VALUES ('schema_version', '1')
+INSERT INTO schema_meta(key, value) VALUES ('schema_version', '3')
 ON CONFLICT(key) DO UPDATE SET value = excluded.value;

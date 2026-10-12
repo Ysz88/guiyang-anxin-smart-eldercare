@@ -1,0 +1,166 @@
+[
+  {
+    "id": "PL-001",
+    "name": "北海银滩景区东门",
+    "match": "北海银滩",
+    "city": "北海",
+    "source": "名称示例；适老要素待机构踏勘",
+    "verified": false,
+    "slope_score": null,
+    "steps_score": null,
+    "shade_score": null,
+    "wheelchair": null,
+    "network_level": null,
+    "area": "北海",
+    "aliases": [
+      "银滩",
+      "海边",
+      "看海"
+    ]
+  },
+  {
+    "id": "PL-002",
+    "name": "北海侨港风情街",
+    "match": "侨港风情街",
+    "city": "北海",
+    "source": "名称示例；适老要素待机构踏勘",
+    "verified": false,
+    "slope_score": null,
+    "steps_score": null,
+    "shade_score": null,
+    "wheelchair": null,
+    "network_level": null,
+    "area": "北海",
+    "aliases": [
+      "侨港",
+      "风情街",
+      "吃海鲜"
+    ]
+  },
+  {
+    "id": "PL-003",
+    "name": "巴马山地康养路线（模拟）",
+    "match": "巴马山地康养路线",
+    "city": "河池",
+    "source": "合成案例，参数仅用于演示规则",
+    "verified": false,
+    "slope_score": 2,
+    "steps_score": 1,
+    "shade_score": 2,
+    "wheelchair": 0,
+    "network_level": "weak",
+    "area": "巴马",
+    "aliases": [
+      "爬山",
+      "登山",
+      "山路",
+      "长寿村爬山",
+      "山地"
+    ]
+  },
+  {
+    "id": "PL-004",
+    "name": "崇左边境游览路线（模拟）",
+    "match": "崇左边境游览路线",
+    "city": "崇左",
+    "source": "合成案例，参数仅用于演示规则",
+    "verified": false,
+    "slope_score": 3,
+    "steps_score": 3,
+    "shade_score": 2,
+    "wheelchair": null,
+    "network_level": "none",
+    "area": "崇左",
+    "aliases": [
+      "边境",
+      "德天",
+      "友谊关",
+      "凭祥"
+    ],
+    "border": "area"
+  },
+  {
+    "id": "PL-005",
+    "name": "巴马长寿村盘阳河平缓步道（模拟）",
+    "match": "盘阳河平缓步道",
+    "city": "河池",
+    "area": "巴马",
+    "aliases": [
+      "盘阳河",
+      "平缓步道",
+      "观光步道",
+      "散步",
+      "长寿村"
+    ],
+    "source": "合成案例，参数仅用于演示规则",
+    "verified": false,
+    "slope_score": 4,
+    "steps_score": 4,
+    "shade_score": 4,
+    "wheelchair": 1,
+    "network_level": "good"
+  },
+  {
+    "id": "PL-006",
+    "name": "东兴口岸→越南芒街一日游（模拟）",
+    "match": "芒街",
+    "city": "防城港",
+    "area": "东兴",
+    "aliases": [
+      "芒街",
+      "越南",
+      "出境",
+      "过境",
+      "出国",
+      "边境一日游",
+      "跨境游"
+    ],
+    "source": "合成案例，参数仅用于演示规则",
+    "verified": false,
+    "slope_score": 4,
+    "steps_score": 3,
+    "shade_score": 2,
+    "wheelchair": null,
+    "network_level": "weak",
+    "border": "cross"
+  },
+  {
+    "id": "PL-007",
+    "name": "东兴京岛金滩（境内，模拟）",
+    "match": "京岛金滩",
+    "city": "防城港",
+    "area": "东兴",
+    "aliases": [
+      "京岛",
+      "金滩",
+      "万尾"
+    ],
+    "source": "合成案例，参数仅用于演示规则",
+    "verified": false,
+    "slope_score": 5,
+    "steps_score": 4,
+    "shade_score": 3,
+    "wheelchair": 1,
+    "network_level": "good"
+  },
+  {
+    "id": "PL-008",
+    "name": "东兴市区（边境城市，模拟）",
+    "match": "东兴市区",
+    "city": "防城港",
+    "area": "东兴",
+    "aliases": [
+      "东兴",
+      "口岸",
+      "中越边境"
+    ],
+    "source": "合成案例，参数仅用于演示规则",
+    "verified": false,
+    "slope_score": 4,
+    "steps_score": 4,
+    "shade_score": 3,
+    "wheelchair": null,
+    "network_level": "good",
+    "border": "area"
+  }
+]

@@ -1,0 +1,163 @@
+/* 桂养安心 · 旅居智管 — 设计令牌 v3
+ *
+ * 方向：政务业务工作台 + 适老服务界面（见 DESIGN.md）。
+ *   · 纸面浅底承载长时间监管操作；黛青（深青绿）用于导航与关键操作；
+ *   · 蓝色只用于信息与焦点；琥珀 / 红色只表达风险与待处理状态；
+ *   · 铜鼓金仅作装饰细线（品牌标识、壮锦纹样），从不表达状态。
+ * 数字使用 Barlow（DIN 风格，SIL OFL），Windows 回退到系统自带的 Bahnschrift。
+ * 所有文字色在其常用底色上 ≥ 4.5:1（WCAG AA）。
+ */
+
+@font-face {
+  font-family: "Barlow";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("assets/barlow-500.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Barlow";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("assets/barlow-600.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Barlow";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("assets/barlow-700.woff2") format("woff2");
+}
+
+:root {
+  /* ---- 字体 -------------------------------------------------------- */
+  --font-sans: "PingFang SC", "Microsoft YaHei UI", "Microsoft YaHei", "HarmonyOS Sans SC", "Noto Sans CJK SC", "Source Han Sans SC", "Noto Sans SC", system-ui, sans-serif;
+  --font-num: "Barlow", "DIN Alternate", "Bahnschrift", "Segoe UI", var(--font-sans);
+
+  --fs-2xs: 12px;
+  --fs-xs: 12.5px;
+  --fs-sm: 13px;
+  --fs-md: 14px;
+  --fs-base: 14px;
+  --fs-lg: 16px;
+  --fs-xl: 18px;
+  --fs-2xl: 20px;
+  --fs-3xl: 24px;
+  --fs-kpi: 28px;
+
+  --lh-tight: 1.25;
+  --lh-snug: 1.45;
+  --lh-body: 1.6;
+
+  /* ---- 中性色（带一点青绿的冷灰） --------------------------------------- */
+  --ink: #15211f;
+  --ink-2: #3a4744;
+  --muted: #5b6865;
+  --subtle: #8a9592;
+  --line: #e1e7e5;
+  --line-2: #ecf0ee;
+  --line-strong: #cbd4d1;
+  --paper: #f2f4f3;
+  --surface: #ffffff;
+  --surface-2: #f7f9f8;
+  --surface-3: #f0f4f2;
+  --table-head: #f5f7f6;
+
+  /* ---- 品牌：黛青 / 玉青 ------------------------------------------------ */
+  --brand-950: #081f1d;
+  --brand-900: #0b2b28;
+  --brand-800: #0d3d37;
+  --brand-750: #0c5046;
+  --brand-700: #0f6657;
+  --brand-600: #13796a;
+  --brand-500: #1a8c78;
+  --brand-300: #86cbb8;
+  --brand-200: #bfe3d8;
+  --brand-100: #dcefe9;
+  --brand-50: #eff7f4;
+
+  /* ---- 装饰：铜鼓金（只用于细线与标识） ---------------------------------- */
+  --bronze: #c3924a;
+  --bronze-light: #e9c98f;
+  --bronze-soft: #f7eddc;
+
+  /* ---- 语义色 ------------------------------------------------------ */
+  --info: #1e5fa8;
+  --info-ink: #184b85;
+  --info-soft: #edf3fb;
+  --info-line: #d3e1f3;
+
+  --warn: #a35f00;
+  --warn-ink: #7e4a00;
+  --warn-fill: #e39a2e;
+  --warn-soft: #fff5e4;
+  --warn-line: #f1d6a6;
+
+  --danger: #c0392f;
+  --danger-ink: #9b2c23;
+  --danger-fill: #d4473b;
+  --danger-soft: #fdeeec;
+  --danger-line: #f3c7c1;
+
+  --success: #1c7a4d;
+  --success-ink: #155f3c;
+  --success-fill: #2f9b67;
+  --success-soft: #e8f5ee;
+  --success-line: #c2e3d1;
+
+  --neutral: #6a7673;
+  --neutral-ink: #4a5653;
+  --neutral-soft: #eef1f0;
+  --neutral-line: #dce2e0;
+
+  --focus: #1e5fa8;
+  --focus-ring: 0 0 0 3px rgba(30, 95, 168, 0.28);
+
+  /* ---- 间距 / 圆角 / 尺寸 ----------------------------------------------- */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 20px;
+  --s-6: 24px;
+  --s-8: 32px;
+  --s-10: 40px;
+
+  --r-xs: 3px;
+  --r-sm: 6px;
+  --r-md: 8px;
+  --r-lg: 12px;
+  --r-pill: 999px;
+
+  --control-h: 38px;
+  --control-h-sm: 32px;
+  --control-h-lg: 46px;
+  --icon-btn: 36px;
+  --sidebar-w: 232px;
+  --topbar-h: 60px;
+  --gap: 16px;
+
+  /* ---- 阴影（克制） ------------------------------------------------- */
+  --sh-card: 0 1px 2px rgba(17, 38, 34, 0.04);
+  --sh-raised: 0 8px 20px -8px rgba(17, 38, 34, 0.16), 0 2px 4px rgba(17, 38, 34, 0.04);
+  --sh-overlay: 0 28px 70px -16px rgba(8, 26, 23, 0.38), 0 4px 12px rgba(8, 26, 23, 0.08);
+
+  /* ---- 动效 -------------------------------------------------------- */
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --t-fast: 120ms;
+  --t-base: 180ms;
+
+  /* ---- 层级 -------------------------------------------------------- */
+  --z-sticky: 20;
+  --z-sidebar: 40;
+  --z-scrim: 35;
+  --z-modal: 70;
+  --z-toast: 90;
+
+  /* ---- 纹样：壮锦菱形纹（极低透明度的装饰底纹） ----------------------------- */
+  --pattern-brocade-light: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Cg fill='none' stroke='%23ffffff' stroke-opacity='0.07'%3E%3Cpath d='M14 1 27 14 14 27 1 14Z'/%3E%3Cpath d='M14 8 20 14 14 20 8 14Z'/%3E%3C/g%3E%3Cpath fill='%23ffffff' fill-opacity='0.1' d='M13 13h2v2h-2z'/%3E%3C/svg%3E");
+  --pattern-brocade-brand: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Cg fill='none' stroke='%230f6657' stroke-opacity='0.08'%3E%3Cpath d='M14 1 27 14 14 27 1 14Z'/%3E%3Cpath d='M14 8 20 14 14 20 8 14Z'/%3E%3C/g%3E%3Cpath fill='%230f6657' fill-opacity='0.1' d='M13 13h2v2h-2z'/%3E%3C/svg%3E");
+}

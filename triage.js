@@ -5,8 +5,9 @@
     return Object.assign({ rule_id: ruleId, rule_label: ruleLabel, urgent: false }, values);
   }
 
-  function assess(message) {
+  function assess(message, ctx = {}) {
     const text = String(message || "").toLowerCase().replace(/\s+/g, "");
+    const conditions = Array.isArray(ctx.conditions) ? ctx.conditions.join("、") : "";
 
     const chestEmergency = /胸痛|胸口(?:疼|痛|发闷|闷)|心口(?:疼|痛)|胸闷|喘不上气|喘不过气|呼吸(?:困难|不畅|急促)|气短得厉害|窒息|嘴唇发紫/.test(text);
     if (chestEmergency) {
@@ -40,7 +41,7 @@
       });
     }
 
-    const majorInjury = /骨折|腿断|胳膊断|手臂断|脚断|骨头断|无法负重|不能负重|大量出血|出血不止|流血不止|严重摔伤|摔倒后(?:站不起来|剧烈疼|疼得厉害)|跌倒后(?:动不了|剧烈疼)|头部受伤|撞到头|开放性伤口/.test(text);
+    const majorInjury = /骨折|腿断|胳膊断|手臂断|脚断|骨头断|无法负重|不能负重|大量出血|出血不止|流血不止|严重摔伤|(?:摔倒|跌倒|摔了|跌了|滑倒|摔跤|跌跤|绊倒)[^。！？!?]{0,8}(?:起不来|站不起来|爬不起来|动不了|剧烈疼|疼得厉害)|头部受伤|撞到头|开放性伤口/.test(text);
     if (majorInjury) {
       return decision("medical_trauma", "外伤急症", {
         summary: "疑似骨折或持续出血，请停止移动伤处并立即拨打120。",
@@ -69,7 +70,7 @@
       });
     }
 
-    if (/被跟踪|人身危险|抢劫|打人|被打|威胁|骚扰|有人闯入/.test(text)) {
+    if (/被跟踪|人身危险|抢劫|打人|被打|威胁|骚扰|有人闯[入进]/.test(text)) {
       return decision("personal_safety", "人身安全", {
         summary: "请先离开危险位置，并立即联系110。",
         immediate_actions: ["前往明亮且有人值守的位置", "把当前位置发给家属或机构", "拨打110说明人员、地点和当前危险"],
@@ -80,6 +81,21 @@
         escalate: true,
         urgent: true,
         rationale: ["描述涉及现实人身威胁", "需要属地公安立即介入"]
+      });
+    }
+
+    if (/救命|救救我|快来人|来人啊|来人呀|来人哪|有人吗快|求救|求求你们来|sos/.test(text)) {
+      return decision("personal_sos", "紧急呼救", {
+        summary: "已识别到呼救。平台已生成站内响应工单；回拨为模拟流程，请同时联系值班人员；情况危急请直接拨打120。",
+        immediate_actions: ["留在原地，保持电话畅通，等待平台回拨", "如能说话，请补充在哪里、发生了什么", "出现胸痛、呼吸困难或大量出血时，立即拨打120"],
+        place_route: "留在当前位置；值班人员正在赶来确认。",
+        price: "平台应急响应和报警求助免费。",
+        phone: "120",
+        risk_level: "high",
+        escalate: true,
+        urgent: true,
+        sos: true,
+        rationale: ["语音或文字中出现明确呼救词", "按平台应急响应机制先回拨确认，再由值班人员到场"]
       });
     }
 
@@ -97,6 +113,14 @@
       });
     }
 
+    const fraudSignals = [/保证收益|稳赚不赔|高额回报|养老投资|养老床位返利/, /转账|汇款|预付|充值|交押金/, /索要验证码|屏幕共享|陌生链接|冒充客服|冒充民政|冒充公检法/].filter((item) => item.test(text)).length;
+    if (fraudSignals >= 2) {
+      return decision("fraud_warning", "涉老诈骗风险提示", {
+        summary: "发现多项可疑话术，请先暂停付款并请工作人员核实。",
+        immediate_actions: ["停止转账和提供验证码，保留聊天、合同与付款凭证", "请机构或家属协助核实对方身份与合同", "若已转账或遭胁迫，请及时向公安机关咨询报警"],
+        place_route: "先到有工作人员陪同的安全地点核对信息。", price: "不要为获取所谓返利追加付款。", phone: "110（已受骗或受到威胁时）", risk_level: "medium", escalate: true, intent: "fraud", rationale: ["命中至少两类可疑交易/身份话术", "仅作非定罪风险提示，须人工复核"]
+      });
+    }
     if (/收费|价格|退款|多收|乱收费|票据|消费|合同|押金/.test(text)) {
       return decision("consumer_dispute", "消费维权", {
         summary: "先保存票据和付款记录，再要求核对公示价格。",
@@ -125,14 +149,14 @@
 
     if (/头晕|头昏|疼|痛|咳嗽|发烧|发热|恶心|呕吐|腹泻|血压|不舒服|乏力|没胃口|食欲差/.test(text)) {
       return decision("medical_attention", "身体不适", {
-        summary: "已识别到身体不适，请先休息并联系机构工作人员复核。",
-        immediate_actions: ["坐下休息，不要独自外出", "告诉工作人员何时开始、哪里不适", "症状加重或出现胸痛、呼吸困难时立即拨打120"],
+        summary: /高血压/.test(conditions) && /头晕|头昏|血压/.test(text) ? "您有高血压史，请静坐并联系工作人员核对当前症状。" : "已识别到身体不适，请先休息并联系机构工作人员复核。",
+        immediate_actions: ["坐下休息，不要独自外出", "告诉工作人员何时开始、哪里不适", /高血压/.test(conditions) && /头晕|头昏|血压/.test(text) ? "告知既往高血压史，请工作人员协助测量并联系医护复核" : "症状加重或出现胸痛、呼吸困难时立即拨打120"],
         place_route: "留在机构或当前位置，等待工作人员现场查看。",
         price: "现场关怀以机构公示为准；就医费用按医疗机构结算。",
         phone: "120（症状加重时）",
         risk_level: "medium",
         escalate: true,
-        rationale: ["描述出现身体不适", "当前信息不足以排除风险，需要人工复核"]
+        rationale: ["描述出现身体不适", /高血压/.test(conditions) && /头晕|头昏|血压/.test(text) ? "既往高血压史与本次描述同时出现，需人工核对" : "当前信息不足以排除风险，需要人工复核"]
       });
     }
 

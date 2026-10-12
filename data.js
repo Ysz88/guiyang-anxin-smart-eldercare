@@ -1,387 +1,2038 @@
 window.GY_DATA = {
-  version: 3,
-  accounts: {
-    elder: { account: "elder", password: "123456", name: "李桂芳", org: "旅居老人", avatar: "李" },
-    provider: { account: "center", password: "123456", name: "周敏", org: "北海银龄康养中心", avatar: "周" },
-    regulator: { account: "admin", password: "123456", name: "陈科长", org: "自治区民政主管部门", avatar: "陈" }
+  "version": 11,
+  "anchorDate": "2026-08-10",
+  "accounts": {
+    "elder": {
+      "account": "elder",
+      "name": "李桂芳",
+      "org": "旅居老人",
+      "avatar": "李"
+    },
+    "provider": {
+      "account": "center",
+      "name": "周敏",
+      "org": "北海银龄康养中心",
+      "avatar": "周"
+    },
+    "regulator": {
+      "account": "admin",
+      "name": "陈科长",
+      "org": "自治区民政主管部门",
+      "avatar": "陈"
+    }
   },
-  profile: {
-    id: "GX-LJ-2026-000318",
-    name: "李桂芳",
-    gender: "女",
-    age: 68,
-    source: "湖南省长沙市",
-    idCard: "4301**********1628",
-    phone: "138****6038",
-    stayCity: "北海市",
-    institution: "北海银龄康养中心",
-    room: "颐养楼 208室",
-    stayRange: "2026.08.03 - 2026.10.30",
-    emergencyName: "李明辉（儿子）",
-    emergencyPhone: "138****7281",
-    conditions: ["高血压", "膝关节退行性病变"],
-    allergy: "青霉素",
-    completeness: 92,
-    risk: "medium",
-    lastCheck: "今日 07:42",
-    screening: {
-      overall: "medium",
-      confidence: 0.91,
-      source: "本人自填 + 护理记录",
-      updatedAt: "今日 07:42",
-      reviewRequired: true,
-      reviewStatus: "待人工复核",
-      missing: [],
-      dimensions: [
-        { key: "activity", label: "肢体活动", value: "轻度不适", level: "medium", evidence: "膝关节不适，仍可独立行走" },
-        { key: "communication", label: "言语沟通", value: "正常", level: "low", evidence: "本人自填，沟通清晰" },
-        { key: "sensory", label: "视听能力", value: "正常", level: "low", evidence: "未报告视听异常" },
-        { key: "emotion", label: "心理与情绪", value: "平稳", level: "low", evidence: "近3次打卡情绪平稳" },
-        { key: "daily", label: "日常生活", value: "睡眠一般", level: "medium", evidence: "昨晚睡眠一般，建议午后关怀" }
+  "profile": {
+    "id": "GX-LJ-2026-000318",
+    "name": "李桂芳",
+    "gender": "女",
+    "age": 68,
+    "source": "湖南省长沙市",
+    "idCard": "4301**********1628",
+    "phone": "138****6038",
+    "stayCity": "北海市",
+    "institution": "北海银龄康养中心",
+    "room": "颐养楼 208室",
+    "stayRange": "2026.08.03 - 2026.10.30",
+    "emergencyName": "李明辉（儿子）",
+    "emergencyPhone": "138****7281",
+    "conditions": [
+      "高血压",
+      "膝关节退行性病变"
+    ],
+    "allergy": "青霉素",
+    "completeness": 92,
+    "risk": "medium",
+    "lastCheck": "昨天 08:05",
+    "screening": {
+      "overall": "medium",
+      "source": "本人自填 + 护理记录",
+      "updatedAt": "今日 07:42",
+      "reviewRequired": true,
+      "reviewStatus": "待人工复核",
+      "missing": [],
+      "dimensions": [
+        {
+          "key": "activity",
+          "label": "肢体活动",
+          "value": "轻度不适",
+          "level": "medium",
+          "evidence": "膝关节不适，仍可独立行走"
+        },
+        {
+          "key": "communication",
+          "label": "言语沟通",
+          "value": "正常",
+          "level": "low",
+          "evidence": "本人自填，沟通清晰"
+        },
+        {
+          "key": "sensory",
+          "label": "视听能力",
+          "value": "正常",
+          "level": "low",
+          "evidence": "未报告视听异常"
+        },
+        {
+          "key": "emotion",
+          "label": "心理与情绪",
+          "value": "平稳",
+          "level": "low",
+          "evidence": "近3次打卡情绪平稳"
+        },
+        {
+          "key": "daily",
+          "label": "日常生活",
+          "value": "睡眠一般",
+          "level": "medium",
+          "evidence": "昨晚睡眠一般，建议午后关怀"
+        }
       ],
-      carePlan: "午后复测血压，完成一次护理员情绪回访；若头晕加重立即升级。"
+      "carePlan": "午后复测血压，完成一次护理员情绪回访；若头晕加重立即升级。",
+      "dataCompleteness": 1.0
     },
-    consents: {
-      basic: true,
-      institution: true,
-      health: true,
-      crossRegion: false
+    "consents": {
+      "basic": true,
+      "institution": true,
+      "health": true,
+      "crossRegion": false
     }
   },
-  dailyChecks: [
-    { date: "2026-08-10", sleep: "一般", appetite: "良好", mood: "平稳", mobility: "正常", status: "已完成" },
-    { date: "2026-08-09", sleep: "良好", appetite: "良好", mood: "愉快", mobility: "正常", status: "已完成" },
-    { date: "2026-08-08", sleep: "一般", appetite: "一般", mood: "平稳", mobility: "轻度不适", status: "已完成" }
+  "dailyChecks": [
+    {
+      "date": "2026-08-09",
+      "sleep": "一般",
+      "appetite": "良好",
+      "mood": "平稳",
+      "mobility": "正常",
+      "status": "已完成"
+    },
+    {
+      "date": "2026-08-08",
+      "sleep": "良好",
+      "appetite": "良好",
+      "mood": "愉快",
+      "mobility": "正常",
+      "status": "已完成"
+    },
+    {
+      "date": "2026-08-07",
+      "sleep": "一般",
+      "appetite": "一般",
+      "mood": "平稳",
+      "mobility": "轻度不适",
+      "status": "已完成"
+    }
   ],
-  residents: [
-    { id: "GX-LJ-2026-000318", name: "李桂芳", age: 68, source: "湖南长沙", room: "颐养楼 208", checkIn: "08-03", risk: "medium", fresh: "2小时前", status: "在住" },
-    { id: "GX-LJ-2026-000267", name: "王建国", age: 72, source: "四川成都", room: "颐养楼 316", checkIn: "07-28", risk: "high", fresh: "18分钟前", status: "在住" },
-    { id: "GX-LJ-2026-000251", name: "赵秀兰", age: 66, source: "湖北武汉", room: "雅居楼 105", checkIn: "07-26", risk: "low", fresh: "1小时前", status: "在住" },
-    { id: "GX-LJ-2026-000232", name: "刘志远", age: 74, source: "重庆市", room: "颐养楼 402", checkIn: "07-22", risk: "medium", fresh: "昨天", status: "在住" },
-    { id: "GX-LJ-2026-000205", name: "陈美华", age: 63, source: "贵州贵阳", room: "雅居楼 211", checkIn: "07-18", risk: "low", fresh: "3小时前", status: "在住" },
-    { id: "GX-LJ-2026-000189", name: "孙和平", age: 79, source: "北京市", room: "颐养楼 118", checkIn: "07-16", risk: "high", fresh: "9分钟前", status: "在住" },
-    { id: "GX-LJ-2026-000171", name: "周桂英", age: 70, source: "江西南昌", room: "雅居楼 307", checkIn: "07-12", risk: "low", fresh: "4小时前", status: "在住" },
-    { id: "GX-LJ-2026-000143", name: "黄德明", age: 76, source: "广东佛山", room: "颐养楼 225", checkIn: "07-09", risk: "medium", fresh: "6小时前", status: "在住" }
+  "residents": [
+    {
+      "id": "GX-LJ-2026-000318",
+      "name": "李桂芳",
+      "age": 68,
+      "source": "湖南长沙",
+      "room": "颐养楼 208",
+      "checkIn": "08-03",
+      "risk": "medium",
+      "fresh": "2小时前",
+      "status": "在住",
+      "emergencyName": "李明辉（儿子）",
+      "emergencyPhone": "138****7281",
+      "screening": {
+        "overall": "medium",
+        "reviewRequired": true,
+        "reviewStatus": "待人工复核",
+        "source": "本人自填 + 护理记录",
+        "updatedAt": "今日 07:42",
+        "missing": [],
+        "dimensions": [
+          {
+            "label": "肢体活动",
+            "value": "轻度不适",
+            "level": "medium",
+            "evidence": "膝关节不适"
+          },
+          {
+            "label": "言语沟通",
+            "value": "正常",
+            "level": "low",
+            "evidence": "护理员观察"
+          },
+          {
+            "label": "视听能力",
+            "value": "正常",
+            "level": "low",
+            "evidence": "未见异常"
+          },
+          {
+            "label": "心理与情绪",
+            "value": "平稳",
+            "level": "low",
+            "evidence": "本人打卡"
+          },
+          {
+            "label": "日常生活",
+            "value": "睡眠一般",
+            "level": "medium",
+            "evidence": "本人自填"
+          }
+        ],
+        "dataCompleteness": 1.0
+      },
+      "scene": "机构入住",
+      "institution": "北海银龄康养中心"
+    },
+    {
+      "id": "GX-LJ-2026-000267",
+      "name": "王建国",
+      "age": 72,
+      "source": "四川成都",
+      "room": "颐养楼 316",
+      "checkIn": "07-28",
+      "risk": "high",
+      "fresh": "18分钟前",
+      "status": "在住",
+      "emergencyName": "王磊（儿子）",
+      "emergencyPhone": "137****2046",
+      "screening": {
+        "overall": "high",
+        "reviewRequired": true,
+        "reviewStatus": "待人工复核",
+        "source": "机构代录 + 血压记录",
+        "updatedAt": "今日 08:12",
+        "missing": [
+          "视听能力"
+        ],
+        "dimensions": [
+          {
+            "label": "肢体活动",
+            "value": "头晕步态不稳",
+            "level": "high",
+            "evidence": "连续两次记录伴头晕"
+          },
+          {
+            "label": "言语沟通",
+            "value": "可沟通",
+            "level": "low",
+            "evidence": "护士观察"
+          },
+          {
+            "label": "视听能力",
+            "value": "缺项",
+            "level": "unknown",
+            "evidence": "本轮未采集"
+          },
+          {
+            "label": "心理与情绪",
+            "value": "担忧",
+            "level": "medium",
+            "evidence": "本人描述"
+          },
+          {
+            "label": "日常生活",
+            "value": "食欲下降",
+            "level": "medium",
+            "evidence": "早餐剩余较多"
+          }
+        ],
+        "dataCompleteness": 0.8
+      },
+      "scene": "机构入住",
+      "institution": "北海银龄康养中心"
+    },
+    {
+      "id": "GX-LJ-2026-000251",
+      "name": "赵秀兰",
+      "age": 66,
+      "source": "湖北武汉",
+      "room": "雅居楼 105",
+      "checkIn": "07-26",
+      "risk": "low",
+      "fresh": "1小时前",
+      "status": "在住",
+      "emergencyName": "陈静（女儿）",
+      "emergencyPhone": "158****3317",
+      "screening": {
+        "overall": "low",
+        "reviewRequired": false,
+        "reviewStatus": "已确认",
+        "source": "本人自填",
+        "updatedAt": "1小时前",
+        "missing": [],
+        "dimensions": [
+          {
+            "label": "肢体活动",
+            "value": "正常",
+            "level": "low",
+            "evidence": "本人自填"
+          },
+          {
+            "label": "言语沟通",
+            "value": "正常",
+            "level": "low",
+            "evidence": "本人自填"
+          },
+          {
+            "label": "视听能力",
+            "value": "正常",
+            "level": "low",
+            "evidence": "本人自填"
+          },
+          {
+            "label": "心理与情绪",
+            "value": "愉快",
+            "level": "low",
+            "evidence": "本人自填"
+          },
+          {
+            "label": "日常生活",
+            "value": "正常",
+            "level": "low",
+            "evidence": "本人自填"
+          }
+        ],
+        "dataCompleteness": 1.0
+      },
+      "scene": "机构入住",
+      "institution": "北海银龄康养中心"
+    },
+    {
+      "id": "GX-LJ-2026-000232",
+      "name": "刘志远",
+      "age": 74,
+      "source": "重庆市",
+      "room": "颐养楼 402",
+      "checkIn": "07-22",
+      "risk": "medium",
+      "fresh": "昨天",
+      "status": "在住",
+      "emergencyName": "刘洋（儿子）",
+      "emergencyPhone": "186****5092",
+      "screening": {
+        "overall": "medium",
+        "reviewRequired": true,
+        "reviewStatus": "缺项待补",
+        "source": "护理员代录",
+        "updatedAt": "昨天",
+        "missing": [
+          "心理与情绪"
+        ],
+        "dimensions": [
+          {
+            "label": "肢体活动",
+            "value": "轻度不适",
+            "level": "medium",
+            "evidence": "康复记录"
+          },
+          {
+            "label": "言语沟通",
+            "value": "正常",
+            "level": "low",
+            "evidence": "护理员观察"
+          },
+          {
+            "label": "视听能力",
+            "value": "正常",
+            "level": "low",
+            "evidence": "护理员观察"
+          },
+          {
+            "label": "心理与情绪",
+            "value": "缺项",
+            "level": "unknown",
+            "evidence": "未完成回访"
+          },
+          {
+            "label": "日常生活",
+            "value": "睡眠一般",
+            "level": "medium",
+            "evidence": "夜间巡查"
+          }
+        ],
+        "dataCompleteness": 0.8
+      },
+      "scene": "机构入住",
+      "institution": "北海银龄康养中心"
+    },
+    {
+      "id": "GX-LJ-2026-000205",
+      "name": "陈美华",
+      "age": 63,
+      "source": "贵州贵阳",
+      "room": "雅居楼 211",
+      "checkIn": "07-18",
+      "risk": "low",
+      "fresh": "3小时前",
+      "status": "在住",
+      "emergencyName": "周晓（女儿）",
+      "emergencyPhone": "139****6628",
+      "screening": {
+        "overall": "low",
+        "reviewRequired": false,
+        "reviewStatus": "已确认",
+        "source": "本人自填",
+        "updatedAt": "3小时前",
+        "missing": [],
+        "dimensions": [
+          {
+            "label": "肢体活动",
+            "value": "正常",
+            "level": "low",
+            "evidence": "本人自填"
+          },
+          {
+            "label": "言语沟通",
+            "value": "正常",
+            "level": "low",
+            "evidence": "本人自填"
+          },
+          {
+            "label": "视听能力",
+            "value": "正常",
+            "level": "low",
+            "evidence": "本人自填"
+          },
+          {
+            "label": "心理与情绪",
+            "value": "平稳",
+            "level": "low",
+            "evidence": "本人自填"
+          },
+          {
+            "label": "日常生活",
+            "value": "正常",
+            "level": "low",
+            "evidence": "本人自填"
+          }
+        ],
+        "dataCompleteness": 1.0
+      },
+      "scene": "机构入住",
+      "institution": "北海银龄康养中心"
+    },
+    {
+      "id": "GX-LJ-2026-000189",
+      "name": "孙和平",
+      "age": 79,
+      "source": "北京市",
+      "room": "颐养楼 118",
+      "checkIn": "07-16",
+      "risk": "high",
+      "fresh": "9分钟前",
+      "status": "在住",
+      "emergencyName": "孙婧（女儿）",
+      "emergencyPhone": "135****1873",
+      "screening": {
+        "overall": "high",
+        "reviewRequired": true,
+        "reviewStatus": "待人工复核",
+        "source": "夜间巡查 + 机构代录",
+        "updatedAt": "9分钟前",
+        "missing": [],
+        "dimensions": [
+          {
+            "label": "肢体活动",
+            "value": "跌倒高风险",
+            "level": "high",
+            "evidence": "夜间起身需搀扶"
+          },
+          {
+            "label": "言语沟通",
+            "value": "正常",
+            "level": "low",
+            "evidence": "护理员观察"
+          },
+          {
+            "label": "视听能力",
+            "value": "听力下降",
+            "level": "medium",
+            "evidence": "需重复说明"
+          },
+          {
+            "label": "心理与情绪",
+            "value": "低落",
+            "level": "medium",
+            "evidence": "近两日主动交流减少"
+          },
+          {
+            "label": "日常生活",
+            "value": "夜间睡眠差",
+            "level": "high",
+            "evidence": "夜间巡查记录"
+          }
+        ],
+        "dataCompleteness": 1.0
+      },
+      "scene": "机构入住",
+      "institution": "北海银龄康养中心"
+    },
+    {
+      "id": "GX-LJ-2026-000171",
+      "name": "周桂英",
+      "age": 70,
+      "source": "江西南昌",
+      "room": "雅居楼 307",
+      "checkIn": "07-12",
+      "risk": "low",
+      "fresh": "4小时前",
+      "status": "在住",
+      "emergencyName": "周建国（儿子）",
+      "emergencyPhone": "159****4460",
+      "screening": {
+        "overall": "low",
+        "reviewRequired": false,
+        "reviewStatus": "已确认",
+        "source": "本人自填",
+        "updatedAt": "4小时前",
+        "missing": [],
+        "dimensions": [
+          {
+            "label": "肢体活动",
+            "value": "正常",
+            "level": "low",
+            "evidence": "本人自填"
+          },
+          {
+            "label": "言语沟通",
+            "value": "正常",
+            "level": "low",
+            "evidence": "本人自填"
+          },
+          {
+            "label": "视听能力",
+            "value": "正常",
+            "level": "low",
+            "evidence": "本人自填"
+          },
+          {
+            "label": "心理与情绪",
+            "value": "愉快",
+            "level": "low",
+            "evidence": "本人自填"
+          },
+          {
+            "label": "日常生活",
+            "value": "正常",
+            "level": "low",
+            "evidence": "本人自填"
+          }
+        ],
+        "dataCompleteness": 1.0
+      },
+      "scene": "机构入住",
+      "institution": "北海银龄康养中心"
+    },
+    {
+      "id": "GX-LJ-2026-000143",
+      "name": "黄德明",
+      "age": 76,
+      "source": "广东佛山",
+      "room": "颐养楼 225",
+      "checkIn": "07-09",
+      "risk": "medium",
+      "fresh": "6小时前",
+      "status": "在住",
+      "emergencyName": "黄敏（女儿）",
+      "emergencyPhone": "136****9025",
+      "screening": {
+        "overall": "medium",
+        "reviewRequired": true,
+        "reviewStatus": "待人工复核",
+        "source": "演示输入 + 护理记录",
+        "updatedAt": "6小时前",
+        "missing": [],
+        "dimensions": [
+          {
+            "label": "肢体活动",
+            "value": "步态变慢",
+            "level": "medium",
+            "evidence": "演示字段，未接入动作识别"
+          },
+          {
+            "label": "言语沟通",
+            "value": "正常",
+            "level": "low",
+            "evidence": "演示字段，未测量转写准确率"
+          },
+          {
+            "label": "视听能力",
+            "value": "正常",
+            "level": "low",
+            "evidence": "本人反馈"
+          },
+          {
+            "label": "心理与情绪",
+            "value": "担忧",
+            "level": "medium",
+            "evidence": "语音表达"
+          },
+          {
+            "label": "日常生活",
+            "value": "食欲一般",
+            "level": "medium",
+            "evidence": "护理员代录"
+          }
+        ],
+        "dataCompleteness": 1.0
+      },
+      "scene": "机构入住",
+      "institution": "北海银龄康养中心"
+    },
+    {
+      "id": "GX-LJ-2026-000352",
+      "name": "吴秀珍",
+      "age": 79,
+      "source": "黑龙江哈尔滨",
+      "room": "居家 · 海城区银海苑3栋502（租住）",
+      "checkIn": "08-01",
+      "risk": "medium",
+      "fresh": "今日 07:30",
+      "status": "在住",
+      "scene": "居家旅居",
+      "institution": "北海银龄康养中心",
+      "livingAlone": true,
+      "address": "北海市海城区银海苑3栋502（社区网格已登记）",
+      "gridWorker": "覃海燕（海城区西街社区网格员）",
+      "gridPhone": "0779-2066***",
+      "emergencyName": "吴建华（儿子）",
+      "emergencyPhone": "135****4410",
+      "screening": {
+        "overall": "medium",
+        "reviewRequired": true,
+        "reviewStatus": "待人工复核",
+        "source": "上门服务护理员代录",
+        "updatedAt": "今日 07:30",
+        "missing": [],
+        "dimensions": [
+          {
+            "key": "activity",
+            "label": "肢体活动",
+            "value": "起身慢，夜间如厕需扶墙",
+            "level": "medium",
+            "evidence": "上门护理员观察"
+          },
+          {
+            "key": "communication",
+            "label": "言语沟通",
+            "value": "可沟通",
+            "level": "low",
+            "evidence": "上门观察"
+          },
+          {
+            "key": "sensory",
+            "label": "视听能力",
+            "value": "听力下降",
+            "level": "medium",
+            "evidence": "需提高音量交流"
+          },
+          {
+            "key": "emotion",
+            "label": "心理与情绪",
+            "value": "平稳",
+            "level": "low",
+            "evidence": "本人描述"
+          },
+          {
+            "key": "daily",
+            "label": "日常生活",
+            "value": "独居，可自理",
+            "level": "low",
+            "evidence": "上门服务记录"
+          }
+        ],
+        "dataCompleteness": 1
+      }
+    },
+    {
+      "id": "GX-LJ-2026-000366",
+      "name": "马振华",
+      "age": 74,
+      "source": "辽宁沈阳",
+      "room": "社区 · 银海区社区养老服务站（日间照料）",
+      "checkIn": "08-05",
+      "risk": "low",
+      "fresh": "昨天 17:20",
+      "status": "在住",
+      "scene": "社区嵌入",
+      "institution": "北海银龄康养中心",
+      "livingAlone": false,
+      "address": "北海市银海区金海岸小区（与老伴同住，白天在社区服务站）",
+      "gridWorker": "黄立新（银海区社区服务站）",
+      "gridPhone": "0779-2088***",
+      "emergencyName": "马丽（女儿）",
+      "emergencyPhone": "139****0725",
+      "screening": {
+        "overall": "low",
+        "reviewRequired": false,
+        "reviewStatus": "已确认",
+        "source": "社区服务站登记",
+        "updatedAt": "昨天 17:20",
+        "missing": [],
+        "dimensions": [
+          {
+            "key": "activity",
+            "label": "肢体活动",
+            "value": "行走正常",
+            "level": "low",
+            "evidence": "服务站观察"
+          },
+          {
+            "key": "communication",
+            "label": "言语沟通",
+            "value": "可沟通",
+            "level": "low",
+            "evidence": "服务站观察"
+          },
+          {
+            "key": "sensory",
+            "label": "视听能力",
+            "value": "正常",
+            "level": "low",
+            "evidence": "未报告异常"
+          },
+          {
+            "key": "emotion",
+            "label": "心理与情绪",
+            "value": "平稳",
+            "level": "low",
+            "evidence": "本人描述"
+          },
+          {
+            "key": "daily",
+            "label": "日常生活",
+            "value": "可自理",
+            "level": "low",
+            "evidence": "服务站观察"
+          }
+        ],
+        "dataCompleteness": 1
+      }
+    },
+    {
+      "id": "GX-LJ-2026-000405",
+      "name": "蒙秀英",
+      "age": 76,
+      "source": "湖南株洲",
+      "room": "滨海颐养社区 2栋 406",
+      "checkIn": "07-22",
+      "risk": "medium",
+      "fresh": "昨天 18:05",
+      "status": "在住",
+      "emergencyName": "蒙志强（儿子）",
+      "emergencyPhone": "188****3151",
+      "scene": "机构入住",
+      "institution": "防城港滨海颐养社区",
+      "screening": {
+        "overall": "medium",
+        "reviewRequired": true,
+        "reviewStatus": "待人工复核",
+        "source": "机构代录",
+        "updatedAt": "昨天 18:05",
+        "missing": [],
+        "dimensions": [
+          {
+            "key": "activity",
+            "label": "肢体活动",
+            "value": "行走正常",
+            "level": "low",
+            "evidence": "机构观察"
+          },
+          {
+            "key": "communication",
+            "label": "言语沟通",
+            "value": "可沟通",
+            "level": "low",
+            "evidence": "机构观察"
+          },
+          {
+            "key": "sensory",
+            "label": "视听能力",
+            "value": "正常",
+            "level": "low",
+            "evidence": "未报告异常"
+          },
+          {
+            "key": "emotion",
+            "label": "心理与情绪",
+            "value": "懊恼、担心被骗",
+            "level": "medium",
+            "evidence": "本人描述"
+          },
+          {
+            "key": "daily",
+            "label": "日常生活",
+            "value": "可自理",
+            "level": "low",
+            "evidence": "机构观察"
+          }
+        ],
+        "dataCompleteness": 1
+      }
+    }
   ],
-  serviceLogs: [
-    { id: "SV-0810-031", residentId: "GX-LJ-2026-000318", resident: "李桂芳", type: "血压测量", staff: "护理员 林静", time: "今日 08:05", result: "138/86 mmHg，建议午后复测", status: "已记录" },
-    { id: "SV-0810-026", residentId: "GX-LJ-2026-000267", resident: "王建国", type: "用药提醒", staff: "护士 梁燕", time: "今日 07:50", result: "已按医嘱服药", status: "已记录" },
-    { id: "SV-0810-021", residentId: "GX-LJ-2026-000251", resident: "赵秀兰", type: "早餐送餐", staff: "服务员 陈佳", time: "今日 07:32", result: "送达并确认用餐", status: "已记录" },
-    { id: "SV-0809-118", residentId: "GX-LJ-2026-000232", resident: "刘志远", type: "康复训练", staff: "康复师 罗文", time: "昨天 16:20", result: "完成15分钟步态训练", status: "已记录" },
-    { id: "SV-0809-104", residentId: "GX-LJ-2026-000189", resident: "孙和平", type: "夜间巡查", staff: "护理员 林静", time: "昨天 22:10", result: "老人已休息，房间环境正常", status: "已记录" }
+  "serviceLogs": [
+    {
+      "id": "SV-0810-031",
+      "residentId": "GX-LJ-2026-000318",
+      "resident": "李桂芳",
+      "type": "血压测量",
+      "staff": "护理员 林静",
+      "time": "今日 08:05",
+      "result": "138/86 mmHg，建议午后复测",
+      "status": "已记录"
+    },
+    {
+      "id": "SV-0810-026",
+      "residentId": "GX-LJ-2026-000267",
+      "resident": "王建国",
+      "type": "用药提醒",
+      "staff": "护士 梁燕",
+      "time": "今日 07:50",
+      "result": "已按医嘱服药",
+      "status": "已记录"
+    },
+    {
+      "id": "SV-0810-021",
+      "residentId": "GX-LJ-2026-000251",
+      "resident": "赵秀兰",
+      "type": "早餐送餐",
+      "staff": "服务员 陈佳",
+      "time": "今日 07:32",
+      "result": "送达并确认用餐",
+      "status": "已记录"
+    },
+    {
+      "id": "SV-0809-118",
+      "residentId": "GX-LJ-2026-000232",
+      "resident": "刘志远",
+      "type": "康复训练",
+      "staff": "康复师 罗文",
+      "time": "昨天 16:20",
+      "result": "完成15分钟步态训练",
+      "status": "已记录"
+    },
+    {
+      "id": "SV-0809-104",
+      "residentId": "GX-LJ-2026-000189",
+      "resident": "孙和平",
+      "type": "夜间巡查",
+      "staff": "护理员 林静",
+      "time": "昨天 22:10",
+      "result": "房间无人，老人外出未归；电话未接通，已报值班负责人，家属称可能留宿朋友家",
+      "status": "已记录"
+    }
   ],
-  movementLogs: [
+  "movementLogs": [
     {
-      id: "MV-0810-019",
-      residentId: "GX-LJ-2026-000189",
-      resident: "孙和平",
-      type: "临时外出",
-      status: "超时未归",
-      risk: "high",
-      destination: "北海银滩景区东门",
-      reason: "个人散步，超过报备时间仍未返回",
-      departAt: "昨天 18:30",
-      expectedReturn: "昨天 21:30",
-      actualReturn: "--",
-      responsible: "护理员 林静",
-      responsiblePhone: "138****2516",
-      companion: "本人外出",
-      source: "机构外出报备",
-      institutionStatus: "已核验",
-      regulatorStatus: "重点跟进",
-      confirmedBy: "陈科长 · 自治区民政主管部门",
-      confirmedAt: "今日 08:03",
-      eventId: "EV-20260810-015",
-      timeline: [
-        { time: "昨天 18:30", text: "机构登记老人离院", state: "done" },
-        { time: "昨天 21:30", text: "超过预计返回时间", state: "done" },
-        { time: "今日 07:46", text: "自动转入失联风险预警", state: "current" }
+      "id": "MV-0810-019",
+      "residentId": "GX-LJ-2026-000189",
+      "resident": "孙和平",
+      "type": "临时外出",
+      "status": "超时未归",
+      "risk": "high",
+      "destination": "北海银滩景区东门",
+      "reason": "个人散步，超过报备时间仍未返回",
+      "departAt": "昨天 18:30",
+      "expectedReturn": "昨天 21:30",
+      "actualReturn": "--",
+      "responsible": "护理员 林静",
+      "responsiblePhone": "138****2516",
+      "companion": "本人外出",
+      "source": "机构外出报备",
+      "institutionStatus": "已核验",
+      "regulatorStatus": "重点跟进",
+      "confirmedBy": "陈科长 · 自治区民政主管部门",
+      "confirmedAt": "今日 08:03",
+      "eventId": "EV-20260810-015",
+      "timeline": [
+        {
+          "time": "昨天 18:30",
+          "text": "机构登记老人离院",
+          "state": "done"
+        },
+        {
+          "time": "昨天 21:30",
+          "text": "超过预计返回时间",
+          "state": "done"
+        },
+        {
+          "time": "昨天 22:10",
+          "text": "夜间巡查未见老人，家属称可能留宿朋友家，值班负责人继续联系",
+          "state": "done"
+        },
+        {
+          "time": "今日 07:46",
+          "text": "早间点名仍未返回，转入失联风险预警",
+          "state": "current"
+        }
       ]
     },
     {
-      id: "MV-0810-018",
-      residentId: "GX-LJ-2026-000318",
-      resident: "李桂芳",
-      type: "集体活动",
-      status: "外出中",
-      risk: "low",
-      destination: "北海侨港风情街",
-      reason: "机构组织文化体验活动",
-      departAt: "今日 09:00",
-      expectedReturn: "今日 12:00",
-      actualReturn: "--",
-      responsible: "活动领队 周敏",
-      responsiblePhone: "139****6082",
-      companion: "机构统一陪同",
-      source: "机构活动计划",
-      institutionStatus: "已核验",
-      regulatorStatus: "待确认",
-      confirmedBy: "--",
-      confirmedAt: "--",
-      eventId: "",
-      timeline: [
-        { time: "今日 08:40", text: "完成参加人员与应急联系人核验", state: "done" },
-        { time: "今日 09:00", text: "机构责任人确认带队出发", state: "current" }
+      "id": "MV-0810-018",
+      "residentId": "GX-LJ-2026-000318",
+      "resident": "李桂芳",
+      "type": "集体活动",
+      "status": "外出中",
+      "risk": "low",
+      "destination": "北海侨港风情街",
+      "reason": "机构组织文化体验活动（全天，含午餐）",
+      "departAt": "今日 09:00",
+      "expectedReturn": "今日 17:30",
+      "actualReturn": "--",
+      "responsible": "活动领队 周敏",
+      "responsiblePhone": "139****6082",
+      "companion": "机构统一陪同",
+      "source": "机构活动计划",
+      "institutionStatus": "已核验",
+      "regulatorStatus": "待确认",
+      "confirmedBy": "--",
+      "confirmedAt": "--",
+      "eventId": "",
+      "timeline": [
+        {
+          "time": "今日 08:40",
+          "text": "完成参加人员与应急联系人核验",
+          "state": "done"
+        },
+        {
+          "time": "今日 09:00",
+          "text": "机构责任人确认带队出发",
+          "state": "current"
+        }
       ]
     },
     {
-      id: "MV-0810-016",
-      residentId: "GX-LJ-2026-000267",
-      resident: "王建国",
-      type: "外出就医",
-      status: "就医中",
-      risk: "medium",
-      destination: "北海市人民医院门诊部",
-      reason: "血压偏高，机构安排陪同复查",
-      departAt: "今日 08:25",
-      expectedReturn: "今日 11:30",
-      actualReturn: "--",
-      responsible: "护士 梁燕",
-      responsiblePhone: "137****1946",
-      companion: "机构医护陪同",
-      source: "健康预警联动",
-      institutionStatus: "已核验",
-      regulatorStatus: "已确认",
-      confirmedBy: "陈科长 · 自治区民政主管部门",
-      confirmedAt: "今日 08:32",
-      eventId: "EV-20260810-017",
-      timeline: [
-        { time: "今日 08:12", text: "健康异常预警触发", state: "done" },
-        { time: "今日 08:25", text: "护士陪同离院就医", state: "done" },
-        { time: "今日 08:32", text: "监管端确认责任链", state: "current" }
+      "id": "MV-0810-016",
+      "residentId": "GX-LJ-2026-000267",
+      "resident": "王建国",
+      "type": "外出就医",
+      "status": "就医中",
+      "risk": "medium",
+      "destination": "北海市人民医院门诊部",
+      "reason": "血压偏高，机构安排陪同复查（上午就诊，下午取检查结果）",
+      "departAt": "今日 08:25",
+      "expectedReturn": "今日 16:30",
+      "actualReturn": "--",
+      "responsible": "护士 梁燕",
+      "responsiblePhone": "137****1946",
+      "companion": "机构医护陪同",
+      "source": "健康预警联动",
+      "institutionStatus": "已核验",
+      "regulatorStatus": "已确认",
+      "confirmedBy": "陈科长 · 自治区民政主管部门",
+      "confirmedAt": "今日 08:32",
+      "eventId": "EV-20260810-017",
+      "timeline": [
+        {
+          "time": "今日 08:12",
+          "text": "健康异常预警触发",
+          "state": "done"
+        },
+        {
+          "time": "今日 08:25",
+          "text": "护士陪同离院就医",
+          "state": "done"
+        },
+        {
+          "time": "今日 08:32",
+          "text": "监管端确认责任链",
+          "state": "current"
+        }
       ]
     },
     {
-      id: "MV-0809-042",
-      residentId: "GX-LJ-2026-000251",
-      resident: "赵秀兰",
-      type: "探亲访友",
-      status: "已返回",
-      risk: "low",
-      destination: "北海市海城区北京路",
-      reason: "与在北海居住的妹妹聚餐",
-      departAt: "昨天 11:20",
-      expectedReturn: "昨天 16:30",
-      actualReturn: "昨天 16:12",
-      responsible: "家属 赵秀梅",
-      responsiblePhone: "136****7824",
-      companion: "家属接送",
-      source: "老人本人报备",
-      institutionStatus: "已核验",
-      regulatorStatus: "已确认",
-      confirmedBy: "监管规则自动校验",
-      confirmedAt: "昨天 11:25",
-      eventId: "",
-      timeline: [
-        { time: "昨天 11:20", text: "家属签接并离院", state: "done" },
-        { time: "昨天 16:12", text: "机构核验老人安全返回", state: "done" }
+      "id": "MV-0809-042",
+      "residentId": "GX-LJ-2026-000251",
+      "resident": "赵秀兰",
+      "type": "探亲访友",
+      "status": "已返回",
+      "risk": "low",
+      "destination": "北海市海城区北京路",
+      "reason": "与在北海居住的妹妹聚餐",
+      "departAt": "昨天 11:20",
+      "expectedReturn": "昨天 16:30",
+      "actualReturn": "昨天 16:12",
+      "responsible": "家属 赵秀梅",
+      "responsiblePhone": "136****7824",
+      "companion": "家属接送",
+      "source": "老人本人报备",
+      "institutionStatus": "已核验",
+      "regulatorStatus": "已确认",
+      "confirmedBy": "监管规则自动校验",
+      "confirmedAt": "昨天 11:25",
+      "eventId": "",
+      "timeline": [
+        {
+          "time": "昨天 11:20",
+          "text": "家属签接并离院",
+          "state": "done"
+        },
+        {
+          "time": "昨天 16:12",
+          "text": "机构核验老人安全返回",
+          "state": "done"
+        }
       ]
     },
     {
-      id: "MV-0810-020",
-      residentId: "GX-LJ-2026-000205",
-      resident: "陈美华",
-      type: "跨市行程",
-      status: "待出发",
-      risk: "medium",
-      destination: "北海站 → 南宁东站",
-      reason: "提前离住并返回家属暂住地",
-      departAt: "明日 09:15",
-      expectedReturn: "计划离住，不返回",
-      actualReturn: "--",
-      responsible: "离住专员 黄欣",
-      responsiblePhone: "135****4068",
-      companion: "家属在南宁东站接站",
-      source: "离住交接计划",
-      institutionStatus: "已核验",
-      regulatorStatus: "待确认",
-      confirmedBy: "--",
-      confirmedAt: "--",
-      eventId: "EV-20260808-061",
-      timeline: [
-        { time: "08-08 18:20", text: "老人提交提前离住申请", state: "done" },
-        { time: "今日 09:12", text: "机构补齐接站人与责任人", state: "current" }
+      "id": "MV-0810-020",
+      "residentId": "GX-LJ-2026-000205",
+      "resident": "陈美华",
+      "type": "跨市行程",
+      "status": "待出发",
+      "risk": "medium",
+      "destination": "北海站 → 南宁东站",
+      "reason": "提前离住并返回家属暂住地",
+      "departAt": "明日 09:15",
+      "expectedReturn": "计划离住，不返回",
+      "actualReturn": "--",
+      "responsible": "离住专员 黄欣",
+      "responsiblePhone": "135****4068",
+      "companion": "家属在南宁东站接站",
+      "source": "离住交接计划",
+      "institutionStatus": "已核验",
+      "regulatorStatus": "待确认",
+      "confirmedBy": "--",
+      "confirmedAt": "--",
+      "eventId": "EV-20260808-061",
+      "timeline": [
+        {
+          "time": "08-08 18:20",
+          "text": "老人提交提前离住申请",
+          "state": "done"
+        },
+        {
+          "time": "今日 09:12",
+          "text": "机构补齐接站人与责任人",
+          "state": "current"
+        }
       ]
     },
     {
-      id: "MV-0810-014",
-      residentId: "GX-LJ-2026-000232",
-      resident: "刘志远",
-      type: "康复活动",
-      status: "外出中",
-      risk: "low",
-      destination: "北海市中山公园健步道",
-      reason: "户外步态康复训练",
-      departAt: "今日 08:10",
-      expectedReturn: "今日 10:30",
-      actualReturn: "--",
-      responsible: "康复师 罗文",
-      responsiblePhone: "138****5731",
-      companion: "康复师全程陪同",
-      source: "康复服务计划",
-      institutionStatus: "已核验",
-      regulatorStatus: "已确认",
-      confirmedBy: "监管规则自动校验",
-      confirmedAt: "今日 08:12",
-      eventId: "",
-      timeline: [
-        { time: "今日 08:02", text: "完成康复活动安全评估", state: "done" },
-        { time: "今日 08:10", text: "康复师确认带队出发", state: "current" }
+      "id": "MV-0810-014",
+      "residentId": "GX-LJ-2026-000232",
+      "resident": "刘志远",
+      "type": "康复活动",
+      "status": "已返回",
+      "risk": "low",
+      "destination": "北海市中山公园健步道",
+      "reason": "户外步态康复训练",
+      "departAt": "今日 08:10",
+      "expectedReturn": "今日 10:30",
+      "actualReturn": "今日 10:20",
+      "responsible": "康复师 罗文",
+      "responsiblePhone": "138****5731",
+      "companion": "康复师全程陪同",
+      "source": "康复服务计划",
+      "institutionStatus": "已核验",
+      "regulatorStatus": "已确认",
+      "confirmedBy": "监管规则自动校验",
+      "confirmedAt": "今日 08:12",
+      "eventId": "",
+      "timeline": [
+        {
+          "time": "今日 08:02",
+          "text": "完成康复活动安全评估",
+          "state": "done"
+        },
+        {
+          "time": "今日 08:10",
+          "text": "康复师确认带队出发",
+          "state": "done"
+        },
+        {
+          "time": "今日 10:20",
+          "text": "康复师带队返回，机构核验老人安全",
+          "state": "done"
+        }
+      ]
+    },
+    {
+      "id": "MV-0810-023",
+      "residentId": "GX-LJ-2026-000232",
+      "resident": "刘志远",
+      "type": "出境行程",
+      "status": "待出发",
+      "risk": "high",
+      "destination": "东兴口岸→越南芒街（一日游）",
+      "reason": "旅行社微信群招募“99元芒街一日游”，行程含3个购物点",
+      "departAt": "明日 08:00",
+      "expectedReturn": "明日 19:00",
+      "actualReturn": "--",
+      "responsible": "待机构指派",
+      "responsiblePhone": "待机构填写",
+      "companion": "旅行社领队（未核实资质）",
+      "source": "机构外出报备",
+      "institutionStatus": "待核验",
+      "regulatorStatus": "待确认",
+      "confirmedBy": "--",
+      "confirmedAt": "--",
+      "eventId": "EV-20260810-036",
+      "crossCity": true,
+      "border": true,
+      "borderCheck": {
+        "passport": "待核实",
+        "insurance": "未购买境外医疗险",
+        "roaming": "未开通国际漫游",
+        "agency": "旅行社资质待核实"
+      },
+      "timeline": [
+        {
+          "time": "今日 09:20",
+          "text": "机构登记出境行程意向",
+          "state": "done"
+        },
+        {
+          "time": "今日 09:20",
+          "text": "出境证件、境外医疗保险与旅行社资质待核验",
+          "state": "current"
+        }
       ]
     }
   ],
-  events: [
+  "events": [
     {
-      id: "EV-20260810-017",
-      residentId: "GX-LJ-2026-000267",
-      resident: "王建国",
-      level: "high",
-      category: "健康异常",
-      title: "连续两次血压偏高并伴头晕",
-      source: "机构上报",
-      location: "北海银龄康养中心 颐养楼316",
-      time: "今日 08:12",
-      status: "处置中",
-      owner: "北海市卫健部门",
-      deadline: "剩余 18分钟",
-      summary: "老人今晨自述头晕，07:55与08:08两次血压测量均高于个人基线，已安排护士陪同休息。",
-      action: "建议联系定点医院远程问诊，若症状加重立即拨打120。",
-      timeline: [
-        { time: "08:12", text: "机构提交异常事件", state: "done" },
-        { time: "08:14", text: "系统触发红色预警", state: "done" },
-        { time: "08:16", text: "卫健联络员接收", state: "current" }
+      "id": "EV-20260810-036",
+      "residentId": "GX-LJ-2026-000232",
+      "resident": "刘志远",
+      "level": "medium",
+      "category": "消费纠纷",
+      "title": "“99元芒街一日游”含3个购物点",
+      "source": "机构报备核验",
+      "location": "东兴口岸（出境行程）",
+      "time": "今日 09:24",
+      "status": "待复核",
+      "owner": "北海银龄康养中心（核验后告知防城港文旅部门）",
+      "deadline": "出发前核实",
+      "scene": "边境",
+      "summary": "老人报名旅行社微信群招募的“99元芒街一日游”，团费明显低于成本，行程含玉器、红木、乳胶3个购物点；领队资质与旅行社备案未核实，老人未购买境外医疗保险。",
+      "action": "出发前核实旅行社资质与合同，提醒低价团强制购物风险；确认证件、境外医疗保险和国际漫游。",
+      "timeline": [
+        {
+          "time": "09:24",
+          "text": "机构核验出境报备时识别低价团特征",
+          "state": "done"
+        },
+        {
+          "time": "09:24",
+          "text": "等待工作人员复核并与老人沟通",
+          "state": "current"
+        }
+      ],
+      "createdAt": "2026-08-10T09:24",
+      "dueAt": "2026-08-11T08:00",
+      "statusChangedAt": "2026-08-10T09:24"
+    },
+    {
+      "id": "EV-20260809-131",
+      "residentId": "GX-LJ-2026-000405",
+      "resident": "蒙秀英",
+      "level": "medium",
+      "category": "消费纠纷",
+      "title": "“99元东兴边境一日游”被带进玉器店，买下“开光手镯”后想退",
+      "source": "老人上报",
+      "location": "防城港滨海颐养社区",
+      "time": "昨天 17:40",
+      "status": "已转派",
+      "institution": "防城港滨海颐养社区",
+      "owner": "防城港市市场监管局东兴分局",
+      "deadline": "3个工作日",
+      "scene": "边境",
+      "summary": "老人报名“99元东兴边境一日游”，行程含多个购物点，导游把团带进玉器店，店员称“开光手镯保平安”，老人以6800元购买手镯，回来后怀疑价格虚高想退货。",
+      "action": "保留购物小票和导游信息，由市场监管部门协调退货。",
+      "timeline": [
+        {
+          "time": "17:40",
+          "text": "老人上报，AI整理事件摘要",
+          "state": "done"
+        },
+        {
+          "time": "18:05",
+          "text": "转派防城港市市场监管局东兴分局",
+          "state": "current"
+        }
+      ],
+      "createdAt": "2026-08-09T17:40",
+      "dueAt": "2026-08-12T17:40",
+      "statusChangedAt": "2026-08-09T17:40"
+    },
+    {
+      "id": "EV-20260810-031",
+      "residentId": "GX-LJ-2026-000267",
+      "resident": "王建国",
+      "level": "high",
+      "category": "涉老诈骗风险",
+      "title": "微信上“孙子”换了新号要学费",
+      "source": "老人上报",
+      "location": "北海市人民医院门诊部（外出就医中）",
+      "time": "今日 10:05",
+      "status": "待复核",
+      "owner": "北海银龄康养中心（待核实后移交）",
+      "deadline": "优先响应",
+      "summary": "一个新微信号加老人好友，头像和名字都是孙子，说原来的手机摔坏了换了号，学校要交培训费5000元，让先转到他同学的卡上，不要告诉爸妈。",
+      "action": "暂缓转账，用原号码联系孙子本人核实。",
+      "timeline": [
+        {
+          "time": "10:05",
+          "text": "老人语音上报，AI整理事件摘要",
+          "state": "done"
+        },
+        {
+          "time": "10:05",
+          "text": "等待工作人员复核",
+          "state": "current"
+        }
+      ],
+      "evidence": {
+        "source": "老人对话主动透露（演示数据）",
+        "quotes": [
+          {
+            "time": "今日 10:05",
+            "text": "新微信号说是我孙子，手机摔坏换了号，要我转5000元培训费到他同学卡上，还说别告诉爸妈。"
+          }
+        ],
+        "checks": [
+          {
+            "tool": "demo_summary_review",
+            "label": "核对演示事件摘要",
+            "result": "一个新微信号加老人好友，头像和名字都是孙子，说原来的手机摔坏了换了号，学校要交培训费5000元，让先转到他同学的卡上，不要告诉爸妈。"
+          }
+        ],
+        "rules": [
+          "演示处置建议：暂缓转账，用原号码联系孙子本人核实。"
+        ],
+        "movement": "当前所在（参考）：MV-0810-016 · 北海市人民医院门诊部",
+        "matchedAlert": "",
+        "provider": "演示资料（非实时模型调用）",
+        "confirmedAt": "今日 10:05"
+      },
+      "createdAt": "2026-08-10T10:05",
+      "dueAt": "2026-08-10T10:35",
+      "statusChangedAt": "2026-08-10T10:05"
+    },
+    {
+      "id": "EV-20260809-126",
+      "residentId": "GX-LJ-2026-000189",
+      "resident": "孙和平",
+      "level": "medium",
+      "category": "涉老诈骗风险",
+      "title": "陌生来电称儿子出事急需用钱",
+      "source": "老人上报",
+      "location": "北海银龄康养中心",
+      "time": "昨天 16:40",
+      "status": "待复核",
+      "owner": "北海银龄康养中心（待核实后移交）",
+      "deadline": "2小时内核实",
+      "summary": "下午接到陌生号码，对方哭着叫爸，说自己开车撞了人正在派出所，要两万块私了，叫老人别挂电话、马上去银行汇款。",
+      "action": "挂断后拨打儿子原号码核实，暂不汇款。",
+      "timeline": [
+        {
+          "time": "16:40",
+          "text": "老人语音上报，AI整理事件摘要",
+          "state": "done"
+        },
+        {
+          "time": "16:41",
+          "text": "等待工作人员复核",
+          "state": "current"
+        }
+      ],
+      "evidence": {
+        "source": "老人对话主动透露（演示数据）",
+        "quotes": [
+          {
+            "time": "昨天 16:40",
+            "text": "陌生人电话里哭着叫爸，说撞了人急用两万块私了，让我别挂电话，马上汇款。"
+          }
+        ],
+        "checks": [
+          {
+            "tool": "demo_summary_review",
+            "label": "核对演示事件摘要",
+            "result": "下午接到陌生号码，对方哭着叫爸，说自己开车撞了人正在派出所，要两万块私了，叫老人别挂电话、马上去银行汇款。"
+          }
+        ],
+        "rules": [
+          "演示处置建议：挂断后拨打儿子原号码核实，暂不汇款。"
+        ],
+        "movement": "",
+        "matchedAlert": "",
+        "provider": "演示资料（非实时模型调用）",
+        "confirmedAt": "昨天 16:40"
+      },
+      "createdAt": "2026-08-09T16:40",
+      "dueAt": "2026-08-09T18:40",
+      "statusChangedAt": "2026-08-09T16:40"
+    },
+    {
+      "id": "EV-20260810-024",
+      "residentId": "GX-LJ-2026-000143",
+      "resident": "黄德明",
+      "level": "medium",
+      "category": "涉老诈骗风险",
+      "title": "推销员要求预交巴马养生基地会员定金",
+      "source": "老人上报",
+      "location": "北海银龄康养中心",
+      "time": "今日 09:20",
+      "status": "待复核",
+      "owner": "北海银龄康养中心（待核实后移交）",
+      "deadline": "当天核实",
+      "summary": "有人在机构门口发传单，推销“巴马长寿养生基地”会员卡，称交3000元定金可锁定一年包吃包住名额，还送免费体检，要求当天交钱。",
+      "action": "暂缓付款，保留传单，由机构核实该基地资质。",
+      "timeline": [
+        {
+          "time": "09:20",
+          "text": "老人语音上报，AI整理事件摘要",
+          "state": "done"
+        },
+        {
+          "time": "09:20",
+          "text": "等待工作人员复核",
+          "state": "current"
+        }
+      ],
+      "evidence": {
+        "source": "老人对话主动透露（演示数据）",
+        "quotes": [
+          {
+            "time": "今日 09:20",
+            "text": "门口发传单的人说交3000元定金能锁定巴马养生基地一年包吃包住名额，还送体检，今天要交钱。"
+          }
+        ],
+        "checks": [
+          {
+            "tool": "demo_summary_review",
+            "label": "核对演示事件摘要",
+            "result": "有人在机构门口发传单，推销“巴马长寿养生基地”会员卡，称交3000元定金可锁定一年包吃包住名额，还送免费体检，要求当天交钱。"
+          }
+        ],
+        "rules": [
+          "演示处置建议：暂缓付款，保留传单，由机构核实该基地资质。"
+        ],
+        "movement": "",
+        "matchedAlert": "",
+        "provider": "演示资料（非实时模型调用）",
+        "confirmedAt": "今日 09:20"
+      },
+      "createdAt": "2026-08-10T09:20",
+      "dueAt": "2026-08-10T23:59:59",
+      "statusChangedAt": "2026-08-10T09:20"
+    },
+    {
+      "id": "EV-20260809-117",
+      "residentId": "GX-LJ-2026-000171",
+      "resident": "周桂英",
+      "level": "medium",
+      "category": "涉老诈骗风险",
+      "title": "长寿村康养旅居团要求先交预付款",
+      "source": "老人上报",
+      "location": "北海银龄康养中心",
+      "time": "昨天 19:05",
+      "status": "待复核",
+      "owner": "北海银龄康养中心（待核实后移交）",
+      "deadline": "24小时内核实",
+      "summary": "微信群里有人介绍巴马长寿村康养旅居团，说交8800元预付款包住一年并送全身体检，名额有限今天截止，让老人先转账到个人账户。",
+      "action": "不向个人账户转账，截图留存，交机构核实。",
+      "timeline": [
+        {
+          "time": "19:05",
+          "text": "老人语音上报，AI整理事件摘要",
+          "state": "done"
+        },
+        {
+          "time": "19:05",
+          "text": "等待工作人员复核",
+          "state": "current"
+        }
+      ],
+      "evidence": {
+        "source": "老人对话主动透露（演示数据）",
+        "quotes": [
+          {
+            "time": "昨天 19:05",
+            "text": "微信群里有人说巴马长寿村康养团交8800元预付款包住一年、送体检，名额今天截止，要转到个人账户。"
+          }
+        ],
+        "checks": [
+          {
+            "tool": "demo_summary_review",
+            "label": "核对演示事件摘要",
+            "result": "微信群里有人介绍巴马长寿村康养旅居团，说交8800元预付款包住一年并送全身体检，名额有限今天截止，让老人先转账到个人账户。"
+          }
+        ],
+        "rules": [
+          "演示处置建议：不向个人账户转账，截图留存，交机构核实。"
+        ],
+        "movement": "",
+        "matchedAlert": "",
+        "provider": "演示资料（非实时模型调用）",
+        "confirmedAt": "昨天 19:05"
+      },
+      "createdAt": "2026-08-09T19:05",
+      "dueAt": "2026-08-10T19:05",
+      "statusChangedAt": "2026-08-09T19:05"
+    },
+    {
+      "id": "EV-20260809-103",
+      "residentId": "GX-LJ-2026-000205",
+      "resident": "陈美华",
+      "level": "high",
+      "category": "涉老诈骗风险",
+      "title": "电话推销巴马养生基地投资项目承诺高回报",
+      "source": "老人上报",
+      "location": "北海银龄康养中心",
+      "time": "昨天 15:30",
+      "status": "待复核",
+      "owner": "北海市公安联络组",
+      "deadline": "优先响应",
+      "summary": "接到电话推销巴马长寿养生基地“以房养老”投资项目，承诺年返12%，并说可以先交定金锁定份额，要求提供银行卡验证码。",
+      "action": "立即挂断，不提供验证码，已提醒家属。",
+      "timeline": [
+        {
+          "time": "15:30",
+          "text": "老人语音上报，AI整理事件摘要",
+          "state": "done"
+        },
+        {
+          "time": "15:30",
+          "text": "等待工作人员复核",
+          "state": "current"
+        }
+      ],
+      "evidence": {
+        "source": "老人对话主动透露（演示数据）",
+        "quotes": [
+          {
+            "time": "昨天 15:30",
+            "text": "有人打电话推销巴马长寿养生基地以房养老投资，说年返12%，还让我先交定金、提供银行卡验证码。"
+          }
+        ],
+        "checks": [
+          {
+            "tool": "demo_summary_review",
+            "label": "核对演示事件摘要",
+            "result": "接到电话推销巴马长寿养生基地“以房养老”投资项目，承诺年返12%，并说可以先交定金锁定份额，要求提供银行卡验证码。"
+          }
+        ],
+        "rules": [
+          "演示处置建议：立即挂断，不提供验证码，已提醒家属。"
+        ],
+        "movement": "",
+        "matchedAlert": "",
+        "provider": "演示资料（非实时模型调用）",
+        "confirmedAt": "昨天 15:30"
+      },
+      "createdAt": "2026-08-09T15:30",
+      "dueAt": "2026-08-09T16:00",
+      "statusChangedAt": "2026-08-09T15:30"
+    },
+    {
+      "id": "EV-20260809-088",
+      "residentId": "GX-LJ-2026-000251",
+      "resident": "赵秀兰",
+      "level": "medium",
+      "category": "服务投诉",
+      "title": "理疗项目收费高于公示价格",
+      "source": "老人上报",
+      "location": "北海银龄康养中心",
+      "time": "昨天 11:10",
+      "status": "已转派",
+      "owner": "北海市市场监管部门",
+      "deadline": "2个工作日",
+      "summary": "老人反映理疗项目实际收费100元，与机构公示价格70元不一致，诉求核实收费并退还差额。",
+      "action": "核验收费记录与公示标准，2个工作日内反馈。",
+      "timeline": [
+        {
+          "time": "11:10",
+          "text": "老人语音上报，AI整理事件摘要",
+          "state": "done"
+        },
+        {
+          "time": "11:10",
+          "text": "等待工作人员复核",
+          "state": "current"
+        }
+      ],
+      "createdAt": "2026-08-09T11:10",
+      "dueAt": "2026-08-11T11:10",
+      "statusChangedAt": "2026-08-09T11:10"
+    },
+    {
+      "id": "EV-20260810-017",
+      "residentId": "GX-LJ-2026-000267",
+      "resident": "王建国",
+      "level": "high",
+      "category": "健康异常",
+      "title": "连续两次血压偏高并伴头晕",
+      "source": "机构上报",
+      "location": "北海银龄康养中心 颐养楼316",
+      "time": "今日 08:12",
+      "status": "处置中",
+      "owner": "北海市卫健部门",
+      "deadline": "当天反馈复查结果",
+      "summary": "老人今晨自述头晕，07:55与08:08两次血压测量均高于个人基线，已安排护士陪同休息。",
+      "action": "建议联系定点医院远程问诊，若症状加重立即拨打120。",
+      "timeline": [
+        {
+          "time": "08:12",
+          "text": "机构提交异常事件",
+          "state": "done"
+        },
+        {
+          "time": "08:14",
+          "text": "系统触发红色预警",
+          "state": "done"
+        },
+        {
+          "time": "08:16",
+          "text": "卫健联络员接收",
+          "state": "current"
+        }
+      ],
+      "createdAt": "2026-08-10T08:12",
+      "dueAt": "2026-08-10T23:59:59",
+      "statusChangedAt": "2026-08-10T08:12"
+    },
+    {
+      "id": "EV-20260810-015",
+      "residentId": "GX-LJ-2026-000189",
+      "resident": "孙和平",
+      "level": "high",
+      "category": "失联风险",
+      "title": "超过预计返回时间未归，至今无法联系",
+      "source": "动态监测",
+      "location": "北海银滩景区周边",
+      "time": "今日 07:46",
+      "status": "处置中",
+      "owner": "北海市公安联络组",
+      "deadline": "3小时内核实去向",
+      "summary": "老人昨天18:30离院散步，应于21:30返回，夜间巡查未见老人，家属称可能留宿朋友家；今晨点名仍未返回，电话无法接通，随身手环昨晚19:02起离线，最后报备地点为银滩景区东门。",
+      "action": "机构继续联系本人及家属，属地联络组核查公共区域信息。",
+      "timeline": [
+        {
+          "time": "昨天 22:10",
+          "text": "夜间巡查未见老人，家属称可能留宿朋友家，值班负责人继续联系",
+          "state": "done"
+        },
+        {
+          "time": "07:46",
+          "text": "早间点名仍未返回，转入失联风险处置",
+          "state": "done"
+        },
+        {
+          "time": "07:51",
+          "text": "机构确认本人与家属均无法联系",
+          "state": "done"
+        },
+        {
+          "time": "08:03",
+          "text": "公安联络组接收",
+          "state": "current"
+        }
+      ],
+      "createdAt": "2026-08-10T07:46",
+      "dueAt": "2026-08-10T10:46",
+      "statusChangedAt": "2026-08-10T07:46"
+    },
+    {
+      "id": "EV-20260810-011",
+      "residentId": "GX-LJ-2026-000318",
+      "resident": "李桂芳",
+      "level": "medium",
+      "category": "健康提醒",
+      "title": "晨间血压高于个人基线",
+      "source": "服务记录",
+      "location": "北海银龄康养中心 颐养楼208",
+      "time": "今日 08:07",
+      "status": "待复核",
+      "owner": "北海银龄康养中心",
+      "deadline": "当天复测",
+      "summary": "晨间血压138/86 mmHg，高于近7日个人均值，暂未报告明显不适。",
+      "action": "午后复测并询问头晕、胸闷等症状。",
+      "timeline": [
+        {
+          "time": "08:05",
+          "text": "护理员记录血压",
+          "state": "done"
+        },
+        {
+          "time": "08:07",
+          "text": "系统生成黄色提醒",
+          "state": "current"
+        }
+      ],
+      "createdAt": "2026-08-10T08:07",
+      "dueAt": "2026-08-10T23:59:59",
+      "statusChangedAt": "2026-08-10T08:07"
+    },
+    {
+      "id": "EV-20260809-096",
+      "residentId": "GX-LJ-2026-000232",
+      "resident": "刘志远",
+      "level": "medium",
+      "category": "服务投诉",
+      "title": "康复训练收费与公示价格不一致",
+      "source": "老人上报",
+      "location": "北海银龄康养中心",
+      "time": "昨天 16:42",
+      "status": "已转派",
+      "owner": "北海市市场监管部门",
+      "deadline": "1个工作日",
+      "summary": "老人提供付款截图，实际收取120元，机构公示单次价格为80元，诉求为核实并退回差额。",
+      "action": "核验收费记录与公示标准，2个工作日内反馈。",
+      "timeline": [
+        {
+          "time": "16:42",
+          "text": "老人语音与票据上报",
+          "state": "done"
+        },
+        {
+          "time": "16:43",
+          "text": "AI整理事件摘要",
+          "state": "done"
+        },
+        {
+          "time": "17:05",
+          "text": "转派市场监管部门",
+          "state": "current"
+        }
+      ],
+      "createdAt": "2026-08-09T16:42",
+      "dueAt": "2026-08-10T16:42",
+      "statusChangedAt": "2026-08-09T16:42"
+    },
+    {
+      "id": "EV-20260809-082",
+      "residentId": "GX-LJ-2026-000251",
+      "resident": "赵秀兰",
+      "level": "low",
+      "category": "设施报修",
+      "title": "浴室扶手松动",
+      "source": "老人上报",
+      "location": "雅居楼105",
+      "time": "昨天 10:28",
+      "status": "已办结",
+      "owner": "北海银龄康养中心",
+      "deadline": "当天处理",
+      "summary": "老人拍照反映浴室扶手松动，存在轻度安全隐患。",
+      "action": "维修并复核相邻房间同类设施。",
+      "timeline": [
+        {
+          "time": "10:28",
+          "text": "老人拍照上报",
+          "state": "done"
+        },
+        {
+          "time": "10:36",
+          "text": "后勤人员接单",
+          "state": "done"
+        },
+        {
+          "time": "11:05",
+          "text": "维修完成并回访",
+          "state": "done"
+        }
+      ],
+      "createdAt": "2026-08-09T10:28",
+      "dueAt": "2026-08-09T23:59:59",
+      "closedAt": "2026-08-09T11:05",
+      "statusChangedAt": "2026-08-09T11:05"
+    },
+    {
+      "id": "EV-20260808-061",
+      "residentId": "GX-LJ-2026-000205",
+      "resident": "陈美华",
+      "level": "low",
+      "category": "行程变更",
+      "title": "计划提前离住",
+      "source": "老人报备",
+      "location": "北海银龄康养中心",
+      "time": "08-08 18:20",
+      "status": "已办结",
+      "owner": "北海银龄康养中心",
+      "deadline": "1个工作日",
+      "summary": "老人因家庭安排将离住日期由8月20日提前至8月15日。",
+      "action": "完成费用结算并生成离住交接摘要。",
+      "timeline": [
+        {
+          "time": "08-08 18:20",
+          "text": "老人提交行程变更",
+          "state": "done"
+        },
+        {
+          "time": "08-09 09:12",
+          "text": "机构确认并更新台账",
+          "state": "done"
+        }
+      ],
+      "createdAt": "2026-08-08T18:20",
+      "dueAt": "2026-08-09T18:20",
+      "closedAt": "2026-08-09T09:12",
+      "statusChangedAt": "2026-08-09T09:12"
+    }
+  ],
+  "institutions": [
+    {
+      "id": "IN-04501",
+      "name": "北海银龄康养中心",
+      "city": "北海",
+      "residents": 186,
+      "alerts": 4,
+      "response": "9分钟",
+      "closure": 96.4,
+      "score": 94.2,
+      "status": "正常"
+    },
+    {
+      "id": "IN-04512",
+      "name": "桂林山水颐养公寓",
+      "city": "桂林",
+      "residents": 142,
+      "alerts": 2,
+      "response": "12分钟",
+      "closure": 95.8,
+      "score": 93.6,
+      "status": "正常"
+    },
+    {
+      "id": "IN-04527",
+      "name": "巴马候鸟人康养基地",
+      "city": "河池",
+      "residents": 219,
+      "alerts": 5,
+      "response": "15分钟",
+      "closure": 92.1,
+      "score": 91.8,
+      "status": "关注"
+    },
+    {
+      "id": "IN-04533",
+      "name": "南宁暖心旅居中心",
+      "city": "南宁",
+      "residents": 167,
+      "alerts": 1,
+      "response": "8分钟",
+      "closure": 97.2,
+      "score": 95.1,
+      "status": "正常"
+    },
+    {
+      "id": "IN-04541",
+      "name": "防城港滨海颐养社区",
+      "city": "防城港",
+      "residents": 98,
+      "alerts": 3,
+      "response": "18分钟",
+      "closure": 89.7,
+      "score": 88.9,
+      "status": "关注"
+    },
+    {
+      "id": "IN-04556",
+      "name": "钦州湾旅居康养中心",
+      "city": "钦州",
+      "residents": 86,
+      "alerts": 2,
+      "response": "14分钟",
+      "closure": 93.5,
+      "score": 90.6,
+      "status": "正常"
+    }
+  ],
+  "notifications": [
+    {
+      "id": 1,
+      "title": "红色预警待跟进",
+      "detail": "王建国健康异常事件（EV-20260810-017）为红色预警，请在处置时限内跟进",
+      "time": "2分钟前",
+      "level": "danger",
+      "read": false
+    },
+    {
+      "id": 2,
+      "title": "机构事件已转派",
+      "detail": "收费争议事件已由北海市市场监管部门接收",
+      "time": "26分钟前",
+      "level": "warning",
+      "read": false
+    },
+    {
+      "id": 3,
+      "title": "台账数据需更新",
+      "detail": "3名旅居老人紧急联系人信息超过90天未确认",
+      "time": "1小时前",
+      "level": "neutral",
+      "read": false
+    }
+  ],
+  "sosSessions": [
+    {
+      "id": "SOS-20260808-002",
+      "residentId": "GX-LJ-2026-000267",
+      "resident": "王建国",
+      "residentPhone": "137****5521",
+      "institution": "北海银龄康养中心",
+      "location": "北海银龄康养中心 · 颐养楼 316室",
+      "trigger": "语音呼救（识别到呼救词）",
+      "transcript": "救命，我头晕得站不起来",
+      "riskLevel": "high",
+      "status": "resolved_handled",
+      "escalation": 1,
+      "createdAt": 0,
+      "createdLabel": "08-08 14:41",
+      "resolvedLabel": "08-08 14:58",
+      "callback": {
+        "status": "answered_danger",
+        "attempts": 1
+      },
+      "claimedBy": "周敏",
+      "responseSeconds": 21,
+      "notified": {
+        "manager": false,
+        "family": true,
+        "regulator": false
+      },
+      "contacts": [
+        {
+          "role": "机构值班员",
+          "name": "周敏",
+          "phone": "0779-3882***"
+        },
+        {
+          "role": "机构负责人",
+          "name": "黄志强",
+          "phone": "137****2214"
+        },
+        {
+          "role": "紧急联系人",
+          "name": "王磊（儿子）",
+          "phone": "137****2046"
+        }
+      ],
+      "linkedEventId": "",
+      "timeline": [
+        {
+          "time": "14:41:02",
+          "text": "触发呼救（语音识别：“救命，我头晕得站不起来”）",
+          "state": "done"
+        },
+        {
+          "time": "14:41:03",
+          "text": "平台受理，开始自动回拨并推送值班响应队列",
+          "state": "done"
+        },
+        {
+          "time": "14:41:23",
+          "text": "值班员周敏已接单（响应用时21秒），正在电话确认并派人到场",
+          "state": "done"
+        },
+        {
+          "time": "14:41:40",
+          "text": "回拨接通：确认头晕无法站立，护士立即出发",
+          "state": "done"
+        },
+        {
+          "time": "14:46:12",
+          "text": "护士到场，测量血压并陪同休息，已通知家属",
+          "state": "done"
+        },
+        {
+          "time": "14:58:05",
+          "text": "工作人员到场处置完成，结果已回填动态台账",
+          "state": "done"
+        }
       ]
     },
     {
-      id: "EV-20260810-015",
-      residentId: "GX-LJ-2026-000189",
-      resident: "孙和平",
-      level: "high",
-      category: "失联风险",
-      title: "离开机构后超过2小时未返回",
-      source: "动态监测",
-      location: "北海银滩景区周边",
-      time: "今日 07:46",
-      status: "处置中",
-      owner: "北海市公安联络组",
-      deadline: "剩余 32分钟",
-      summary: "老人昨晚未按计划返回机构，电话暂时无法接通，最后一次定位在银滩景区东门。",
-      action: "机构继续联系本人及家属，属地联络组核查公共区域信息。",
-      timeline: [
-        { time: "07:46", text: "系统判定超时未归", state: "done" },
-        { time: "07:51", text: "机构确认无法联系", state: "done" },
-        { time: "08:03", text: "公安联络组接收", state: "current" }
-      ]
-    },
-    {
-      id: "EV-20260810-011",
-      residentId: "GX-LJ-2026-000318",
-      resident: "李桂芳",
-      level: "medium",
-      category: "健康提醒",
-      title: "晨间血压高于个人基线",
-      source: "服务记录",
-      location: "北海银龄康养中心 颐养楼208",
-      time: "今日 08:07",
-      status: "待复核",
-      owner: "北海银龄康养中心",
-      deadline: "剩余 1小时18分",
-      summary: "晨间血压138/86 mmHg，高于近7日个人均值，暂未报告明显不适。",
-      action: "午后复测并询问头晕、胸闷等症状。",
-      timeline: [
-        { time: "08:05", text: "护理员记录血压", state: "done" },
-        { time: "08:07", text: "系统生成黄色提醒", state: "current" }
-      ]
-    },
-    {
-      id: "EV-20260809-096",
-      residentId: "GX-LJ-2026-000232",
-      resident: "刘志远",
-      level: "medium",
-      category: "服务投诉",
-      title: "康复训练收费与公示价格不一致",
-      source: "老人上报",
-      location: "北海银龄康养中心",
-      time: "昨天 16:42",
-      status: "已转派",
-      owner: "北海市市场监管部门",
-      deadline: "剩余 5小时",
-      summary: "老人提供付款截图，实际收取120元，机构公示单次价格为80元，诉求为核实并退回差额。",
-      action: "核验收费记录与公示标准，2个工作日内反馈。",
-      timeline: [
-        { time: "16:42", text: "老人语音与票据上报", state: "done" },
-        { time: "16:43", text: "AI整理事件摘要", state: "done" },
-        { time: "17:05", text: "转派市场监管部门", state: "current" }
-      ]
-    },
-    {
-      id: "EV-20260809-082",
-      residentId: "GX-LJ-2026-000251",
-      resident: "赵秀兰",
-      level: "low",
-      category: "设施报修",
-      title: "浴室扶手松动",
-      source: "老人上报",
-      location: "雅居楼105",
-      time: "昨天 10:28",
-      status: "已办结",
-      owner: "北海银龄康养中心",
-      deadline: "已按时完成",
-      summary: "老人拍照反映浴室扶手松动，存在轻度安全隐患。",
-      action: "维修并复核相邻房间同类设施。",
-      timeline: [
-        { time: "10:28", text: "老人拍照上报", state: "done" },
-        { time: "10:36", text: "后勤人员接单", state: "done" },
-        { time: "11:05", text: "维修完成并回访", state: "done" }
-      ]
-    },
-    {
-      id: "EV-20260808-061",
-      residentId: "GX-LJ-2026-000205",
-      resident: "陈美华",
-      level: "low",
-      category: "行程变更",
-      title: "计划提前离住",
-      source: "老人报备",
-      location: "北海银龄康养中心",
-      time: "08-08 18:20",
-      status: "已办结",
-      owner: "北海银龄康养中心",
-      deadline: "已按时完成",
-      summary: "老人因家庭安排将离住日期由8月20日提前至8月15日。",
-      action: "完成费用结算并生成离住交接摘要。",
-      timeline: [
-        { time: "08-08 18:20", text: "老人提交行程变更", state: "done" },
-        { time: "08-09 09:12", text: "机构确认并更新台账", state: "done" }
+      "id": "SOS-20260807-001",
+      "residentId": "GX-LJ-2026-000251",
+      "resident": "赵秀兰",
+      "residentPhone": "139****8804",
+      "institution": "北海银龄康养中心",
+      "location": "北海银龄康养中心 · 雅居楼 105室",
+      "trigger": "一键呼救",
+      "transcript": "",
+      "riskLevel": "high",
+      "status": "cancelled",
+      "escalation": 1,
+      "createdAt": 0,
+      "createdLabel": "08-07 09:12",
+      "resolvedLabel": "08-07 09:13",
+      "callback": {
+        "status": "answered_safe",
+        "attempts": 1
+      },
+      "claimedBy": "",
+      "responseSeconds": null,
+      "notified": {
+        "manager": false,
+        "family": false,
+        "regulator": false
+      },
+      "contacts": [
+        {
+          "role": "机构值班员",
+          "name": "周敏",
+          "phone": "0779-3882***"
+        },
+        {
+          "role": "机构负责人",
+          "name": "黄志强",
+          "phone": "137****2214"
+        },
+        {
+          "role": "紧急联系人",
+          "name": "赵敏（女儿）",
+          "phone": "136****4407"
+        }
+      ],
+      "linkedEventId": "",
+      "timeline": [
+        {
+          "time": "09:12:11",
+          "text": "触发呼救（一键呼救）",
+          "state": "done"
+        },
+        {
+          "time": "09:12:12",
+          "text": "平台受理，开始自动回拨并推送值班响应队列",
+          "state": "done"
+        },
+        {
+          "time": "09:12:36",
+          "text": "回拨接通：本人说明为误触，情况正常",
+          "state": "done"
+        },
+        {
+          "time": "09:13:02",
+          "text": "本人确认安全并主动取消（系统留痕，误触不追责）",
+          "state": "done"
+        }
       ]
     }
   ],
-  institutions: [
-    { id: "IN-04501", name: "北海银龄康养中心", city: "北海", residents: 186, alerts: 4, response: "9分钟", closure: 96.4, score: 94.2, status: "正常" },
-    { id: "IN-04512", name: "桂林山水颐养公寓", city: "桂林", residents: 142, alerts: 2, response: "12分钟", closure: 95.8, score: 93.6, status: "正常" },
-    { id: "IN-04527", name: "巴马候鸟人康养基地", city: "河池", residents: 219, alerts: 5, response: "15分钟", closure: 92.1, score: 91.8, status: "关注" },
-    { id: "IN-04533", name: "南宁暖心旅居中心", city: "南宁", residents: 167, alerts: 1, response: "8分钟", closure: 97.2, score: 95.1, status: "正常" },
-    { id: "IN-04541", name: "防城港滨海颐养社区", city: "防城港", residents: 98, alerts: 3, response: "18分钟", closure: 89.7, score: 88.9, status: "关注" },
-    { id: "IN-04556", name: "钦州湾旅居康养中心", city: "钦州", residents: 86, alerts: 2, response: "14分钟", closure: 93.5, score: 90.6, status: "正常" }
+  "dutyRoster": [
+    {
+      "shift": "白班",
+      "from": 7,
+      "to": 15,
+      "name": "周敏",
+      "phone": "0779-3882***",
+      "title": "机构值班员"
+    },
+    {
+      "shift": "晚班",
+      "from": 15,
+      "to": 23,
+      "name": "梁燕",
+      "phone": "0779-3883***",
+      "title": "机构值班员"
+    },
+    {
+      "shift": "夜班",
+      "from": 23,
+      "to": 7,
+      "name": "罗文",
+      "phone": "0779-3885***",
+      "title": "机构夜班值守"
+    }
   ],
-  notifications: [
-    { id: 1, title: "红色预警待跟进", detail: "王建国健康异常事件距首次响应时限剩余18分钟", time: "2分钟前", level: "danger", read: false },
-    { id: 2, title: "机构事件已转派", detail: "收费争议事件已由北海市市场监管部门接收", time: "26分钟前", level: "warning", read: false },
-    { id: 3, title: "台账数据需更新", detail: "3名旅居老人紧急联系人信息超过90天未确认", time: "1小时前", level: "neutral", read: false }
-  ]
+  "devices": [
+    {
+      "id": "DV-0001",
+      "residentId": "GX-LJ-2026-000318",
+      "resident": "李桂芳",
+      "type": "智能手环",
+      "scene": "机构入住",
+      "location": "随身佩戴",
+      "status": "在线",
+      "battery": 76,
+      "lastSeen": "1分钟前",
+      "alarm": "SOS按键呼救"
+    },
+    {
+      "id": "DV-0002",
+      "residentId": "GX-LJ-2026-000267",
+      "resident": "王建国",
+      "type": "智能血压计",
+      "scene": "机构入住",
+      "location": "颐养楼 316",
+      "status": "在线",
+      "battery": null,
+      "lastSeen": "今日 08:12",
+      "alarm": "血压连续超阈值"
+    },
+    {
+      "id": "DV-0003",
+      "residentId": "GX-LJ-2026-000189",
+      "resident": "孙和平",
+      "type": "智能手环",
+      "scene": "机构入住",
+      "location": "随身佩戴",
+      "status": "离线",
+      "battery": 9,
+      "lastSeen": "昨天 19:02",
+      "alarm": "SOS按键呼救"
+    },
+    {
+      "id": "DV-0004",
+      "residentId": "GX-LJ-2026-000352",
+      "resident": "吴秀珍",
+      "type": "跌倒监测雷达",
+      "scene": "居家旅居",
+      "location": "居家卫生间",
+      "status": "在线",
+      "battery": null,
+      "lastSeen": "30秒前",
+      "alarm": "检测到跌倒且60秒未起身"
+    },
+    {
+      "id": "DV-0005",
+      "residentId": "GX-LJ-2026-000352",
+      "resident": "吴秀珍",
+      "type": "燃气泄漏报警器",
+      "scene": "居家旅居",
+      "location": "居家厨房",
+      "status": "在线",
+      "battery": null,
+      "lastSeen": "1分钟前",
+      "alarm": "燃气浓度超标，已自动关阀"
+    },
+    {
+      "id": "DV-0006",
+      "residentId": "GX-LJ-2026-000352",
+      "resident": "吴秀珍",
+      "type": "紧急呼叫按钮",
+      "scene": "居家旅居",
+      "location": "床头",
+      "status": "在线",
+      "battery": 64,
+      "lastSeen": "5分钟前",
+      "alarm": "按下紧急呼叫"
+    },
+    {
+      "id": "DV-0007",
+      "residentId": "GX-LJ-2026-000366",
+      "resident": "马振华",
+      "type": "智能手环",
+      "scene": "社区嵌入",
+      "location": "随身佩戴",
+      "status": "低电量",
+      "battery": 12,
+      "lastSeen": "3分钟前",
+      "alarm": "SOS按键呼救"
+    },
+    {
+      "id": "DV-0008",
+      "residentId": "GX-LJ-2026-000251",
+      "resident": "赵秀兰",
+      "type": "独立式烟感",
+      "scene": "机构入住",
+      "location": "雅居楼 105",
+      "status": "在线",
+      "battery": 88,
+      "lastSeen": "2分钟前",
+      "alarm": "烟雾浓度报警"
+    }
+  ],
+  "weatherAlerts": [],
+  "safetyCheckins": []
 };
-
-// The demo records retain the same five observable dimensions used by the reviewed assessment materials.
-window.GY_DATA.residents.forEach((resident, index) => {
-  const presets = [
-    { overall: "medium", confidence: 0.91, reviewRequired: true, reviewStatus: "待人工复核", source: "本人自填 + 护理记录", updatedAt: "今日 07:42", missing: [], dimensions: [{ label: "肢体活动", value: "轻度不适", level: "medium", evidence: "膝关节不适" }, { label: "言语沟通", value: "正常", level: "low", evidence: "护理员观察" }, { label: "视听能力", value: "正常", level: "low", evidence: "未见异常" }, { label: "心理与情绪", value: "平稳", level: "low", evidence: "本人打卡" }, { label: "日常生活", value: "睡眠一般", level: "medium", evidence: "本人自填" }] },
-    { overall: "high", confidence: 0.68, reviewRequired: true, reviewStatus: "待人工复核", source: "机构代录 + 血压记录", updatedAt: "今日 08:12", missing: ["视听能力"], dimensions: [{ label: "肢体活动", value: "头晕步态不稳", level: "high", evidence: "连续两次记录伴头晕" }, { label: "言语沟通", value: "可沟通", level: "low", evidence: "护士观察" }, { label: "视听能力", value: "缺项", level: "unknown", evidence: "本轮未采集" }, { label: "心理与情绪", value: "担忧", level: "medium", evidence: "本人描述" }, { label: "日常生活", value: "食欲下降", level: "medium", evidence: "早餐剩余较多" }] },
-    { overall: "low", confidence: 0.96, reviewRequired: false, reviewStatus: "已确认", source: "本人自填", updatedAt: "1小时前", missing: [], dimensions: [{ label: "肢体活动", value: "正常", level: "low", evidence: "本人自填" }, { label: "言语沟通", value: "正常", level: "low", evidence: "本人自填" }, { label: "视听能力", value: "正常", level: "low", evidence: "本人自填" }, { label: "心理与情绪", value: "愉快", level: "low", evidence: "本人自填" }, { label: "日常生活", value: "正常", level: "low", evidence: "本人自填" }] },
-    { overall: "medium", confidence: 0.74, reviewRequired: true, reviewStatus: "缺项待补", source: "护理员代录", updatedAt: "昨天", missing: ["心理与情绪"], dimensions: [{ label: "肢体活动", value: "轻度不适", level: "medium", evidence: "康复记录" }, { label: "言语沟通", value: "正常", level: "low", evidence: "护理员观察" }, { label: "视听能力", value: "正常", level: "low", evidence: "护理员观察" }, { label: "心理与情绪", value: "缺项", level: "unknown", evidence: "未完成回访" }, { label: "日常生活", value: "睡眠一般", level: "medium", evidence: "夜间巡查" }] },
-    { overall: "low", confidence: 0.93, reviewRequired: false, reviewStatus: "已确认", source: "本人自填", updatedAt: "3小时前", missing: [], dimensions: [{ label: "肢体活动", value: "正常", level: "low", evidence: "本人自填" }, { label: "言语沟通", value: "正常", level: "low", evidence: "本人自填" }, { label: "视听能力", value: "正常", level: "low", evidence: "本人自填" }, { label: "心理与情绪", value: "平稳", level: "low", evidence: "本人自填" }, { label: "日常生活", value: "正常", level: "low", evidence: "本人自填" }] },
-    { overall: "high", confidence: 0.79, reviewRequired: true, reviewStatus: "待人工复核", source: "夜间巡查 + 机构代录", updatedAt: "9分钟前", missing: [], dimensions: [{ label: "肢体活动", value: "跌倒高风险", level: "high", evidence: "夜间起身需搀扶" }, { label: "言语沟通", value: "正常", level: "low", evidence: "护理员观察" }, { label: "视听能力", value: "听力下降", level: "medium", evidence: "需重复说明" }, { label: "心理与情绪", value: "低落", level: "medium", evidence: "近两日主动交流减少" }, { label: "日常生活", value: "夜间睡眠差", level: "high", evidence: "夜间巡查记录" }] },
-    { overall: "low", confidence: 0.95, reviewRequired: false, reviewStatus: "已确认", source: "本人自填", updatedAt: "4小时前", missing: [], dimensions: [{ label: "肢体活动", value: "正常", level: "low", evidence: "本人自填" }, { label: "言语沟通", value: "正常", level: "low", evidence: "本人自填" }, { label: "视听能力", value: "正常", level: "low", evidence: "本人自填" }, { label: "心理与情绪", value: "愉快", level: "low", evidence: "本人自填" }, { label: "日常生活", value: "正常", level: "low", evidence: "本人自填" }] },
-    { overall: "medium", confidence: 0.82, reviewRequired: true, reviewStatus: "待人工复核", source: "AI视频 + 护理记录", updatedAt: "6小时前", missing: [], dimensions: [{ label: "肢体活动", value: "步态变慢", level: "medium", evidence: "AI动作辅助采集" }, { label: "言语沟通", value: "正常", level: "low", evidence: "AI语音转写置信度高" }, { label: "视听能力", value: "正常", level: "low", evidence: "本人反馈" }, { label: "心理与情绪", value: "担忧", level: "medium", evidence: "语音表达" }, { label: "日常生活", value: "食欲一般", level: "medium", evidence: "护理员代录" }] }
-  ];
-  resident.screening = presets[index] || presets[2];
-});
